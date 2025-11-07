@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Данил Чикин — ZakatCloud</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <div class="animated-bg"></div>
+
+  <div class="app">
+    <aside class="sidebar glass">
+      <div class="logo">
+        <div class="logo-icon">Z</div>
+        <div class="logo-text">ZakatCloud</div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item" href="../index.html">Главная</a>
+        <a class="nav-item" href="../posts.html">Посты</a>
+        <a class="nav-item" href="../articles.html">Софт и статьи</a>
+        <a class="nav-item" href="../gallery.html">Галерея</a>
+        <a class="nav-item" href="../people.html">Люди</a>
+        <a class="nav-item" href="../contacts.html">Контакты</a>
+      </nav>
+    </aside>
+
+    <main class="main glass">
+      <header class="main-header">
+        <h1>Данил Чикин</h1>
+        <p class="subtitle">Местная легенда села Харино</p>
+      </header>
+
+      <section class="content">
+        <div class="person-profile">
+          <div class="profile-header">
+            <div class="profile-photo">
+              <img src="../images/people/chick.jpg" alt="Данил Чикин" />
+            </div>
+            <div class="profile-info">
+              <h2>Данил Чикин</h2>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">📍 Местоположение:</span>
+                  <span class="info-value">г. Омск, с. Харино</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">❤️ Ориентация:</span>
+                  <span class="info-value">Неизвестно, но ориентировочно гей</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">🎭 Прозвища:</span>
+                  <span class="info-value">Чикса, Чика, Волосатый Латинец</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">🏷️ Статус:</span>
+                  <span class="info-value">Гопник, ровный пацанчик</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">🎵 Интересы:</span>
+                  <span class="info-value">Машины, пацанская музыка</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">💪 Телосложение:</span>
+                  <span class="info-value">Уплотненное</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-content">
+            <div class="content-section">
+              <h3>Основная информация</h3>
+              <p>Чикин Данил, известный в родном селе как: Чикса, Чика, Волосатый Латинец. Родился и проживает в Харино. Гопник, ровный пацанчик. Любит машины и пацанскую музыку. Телосложение уплотненное. Из необычных явлений - неправильно поставленная речь, тугодумие, постоянная агрессия и малый интеллект.</p>
+            </div>
+
+            <div class="content-section">
+              <h3>Лор "Фонд Чиксометр"</h3>
+              <p>Про Чикина Данила такая персона как Андрей Силентов создал отдельный лор, который был назван "Фонд Чиксометр", рассказывающий о том, что Чикин Данил является инопланетным роботизированным существом, пришедшим на нашу планету для восстановления инопланетной жизни и сбора информации.</p>
+              <p>Так же, группой лиц по селу Харино были расклеены объявления и пропаже подростка с фото Данила Чикина и информацией, что инопланетное существо сбежало из клетки.</p>
+            </div>
+
+            <div class="content-section">
+              <h3>Реакция на события</h3>
+              <p>Данил Чикин является местным клоуном, над которым по факту шутят все. После расклейки объявление он поторопился ехать на велосипеде и срывать каждое объявление по всей местности поселка, после он прибыл к дому Силентова Андрея и начал угрожать и звать на выяснение данного инцидента.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div>© <span id="year"></span> ZakatCloud</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+  <style>
+    .person-profile {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-photo {
+      flex-shrink: 0;
+      width: 200px;
+      height: 250px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-info h2 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.8rem;
+      color: var(--text);
+    }
+
+    .info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      opacity: 0.9;
+      min-width: 140px;
+      flex-shrink: 0;
+    }
+
+    .info-value {
+      opacity: 0.8;
+      flex: 1;
+    }
+
+    .profile-content {
+      padding: 2rem;
+    }
+
+    .content-section {
+      margin-bottom: 2rem;
+    }
+
+    .content-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .content-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.3rem;
+      color: var(--text);
+      border-left: 3px solid var(--accent-from);
+      padding-left: 1rem;
+    }
+
+    .content-section p {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .content-section p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+
+      .profile-photo {
+        width: 150px;
+        height: 180px;
+        margin: 0 auto;
+      }
+
+      .info-item {
+        flex-direction: column;
+        gap: 0.3rem;
+        text-align: center;
+      }
+
+      .info-label {
+        min-width: auto;
+      }
+
+      .profile-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</body>
+</html>

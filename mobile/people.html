@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Софт и статьи — ZakatCloud Mobile</title>
+  <title>Люди — ZakatCloud Mobile</title>
   <link rel="stylesheet" href="mobile.css" />
 </head>
 <body>
@@ -21,15 +21,15 @@
       <a href="../posts.html">📰 Посты</a>
       <a href="../articles.html">📘 Софт и статьи</a>
       <a href="../gallery.html">🖼 Галерея</a>
+      <a href="../people.html">👥 Люди</a>
       <a href="../contacts.html">📞 Контакты</a>
-      <a href="../people.html">Люди</a>
     </nav>
 
     <main class="mobile-main glass">
-      <h1>Софт и статьи 📘</h1>
-      <p>Интересные заметки, мои проекты и программные эксперименты.</p>
+      <h1>Люди 👥</h1>
+      <p>Интересные и не очень персоны</p>
 
-      <div id="articles-container" class="articles-container"></div>
+      <div id="people-container" class="people-container"></div>
       <div id="pagination" class="pagination"></div>
     </main>
   </div>
@@ -39,27 +39,32 @@
       document.getElementById("mobileNav").classList.toggle("open");
     });
 
-    const ARTICLES_PER_PAGE = 3;
+    const PEOPLE_PER_PAGE = 6;
     let currentPage = 1;
-    let articles = [];
+    let people = [];
 
-    function renderArticles() {
-      const container = document.getElementById("articles-container");
+    function renderPeople() {
+      const container = document.getElementById("people-container");
       container.innerHTML = "";
 
-      const start = (currentPage - 1) * ARTICLES_PER_PAGE;
-      const end = start + ARTICLES_PER_PAGE;
-      const visible = articles.slice(start, end);
+      const start = (currentPage - 1) * PEOPLE_PER_PAGE;
+      const end = start + PEOPLE_PER_PAGE;
+      const visible = people.slice(start, end);
 
-      visible.forEach(article => {
+      visible.forEach(person => {
         const card = `
-          <div class="article-card">
-            <div class="article-header">
-              <h3>${article.title}</h3>
-              <span class="article-date">${article.date}</span>
+          <div class="person-card">
+            <div class="person-photo">
+              <img src="../images/people/${person.photo}" alt="${person.name}" loading="lazy">
             </div>
-            <p class="article-desc">${article.description}</p>
-            <a href="${article.link}" class="read-more" target="_blank">Читать полностью →</a>
+            <div class="person-info">
+              <div class="person-header">
+                <h3>${person.name}</h3>
+                <span class="person-nick">${person.nick}</span>
+              </div>
+              <p class="person-desc">${person.description}</p>
+              <a href="../person/${person.link}" class="read-more">Читать больше →</a>
+            </div>
           </div>
         `;
         container.innerHTML += card;
@@ -72,7 +77,7 @@
       const pagination = document.getElementById("pagination");
       pagination.innerHTML = "";
 
-      const totalPages = Math.ceil(articles.length / ARTICLES_PER_PAGE);
+      const totalPages = Math.ceil(people.length / PEOPLE_PER_PAGE);
       if (totalPages <= 1) return;
 
       const addButton = (num, text = num) => {
@@ -81,7 +86,7 @@
         btn.className = "page-btn" + (num === currentPage ? " active" : "");
         btn.onclick = () => {
           currentPage = num;
-          renderArticles();
+          renderPeople();
           window.scrollTo({ top: 0, behavior: "smooth" });
         };
         pagination.appendChild(btn);
@@ -97,12 +102,15 @@
       if (currentPage < totalPages) addButton(currentPage + 1, '›');
     }
 
-    fetch("../articles.json")
+    fetch("../people.json")
       .then(r => r.json())
-      .then(data => { articles = data; renderArticles(); })
+      .then(data => { 
+        people = data; 
+        renderPeople(); 
+      })
       .catch(err => {
-        console.error("Ошибка загрузки статей:", err);
-        document.getElementById("articles-container").innerHTML = "<p>Не удалось загрузить статьи.</p>";
+        console.error("Ошибка загрузки людей:", err);
+        document.getElementById("people-container").innerHTML = "<p>Не удалось загрузить данные.</p>";
       });
   </script>
 </body>
