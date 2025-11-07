@@ -19,9 +19,27 @@ body {
   overflow-x: hidden;
 }
 
+/* Анимированный фон */
+.animated-bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(-45deg, #d62828, #6b6b6b, #9b0000, #5c5c5c);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  z-index: -1;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .glass {
   backdrop-filter: blur(16px);
   background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .mobile-app {
@@ -38,6 +56,8 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
 }
 
 .logo {
@@ -57,20 +77,34 @@ body {
   align-items: center;
   justify-content: center;
   color: white;
+  font-weight: bold;
 }
 
 .menu-btn {
   font-size: 1.5rem;
-  background: none;
-  border: none;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
   color: white;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.05);
 }
 
 .mobile-nav {
   display: none;
   flex-direction: column;
   background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
   padding: 0.5rem 1rem;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
@@ -83,8 +117,17 @@ body {
 .mobile-nav a {
   color: white;
   text-decoration: none;
-  padding: 0.6rem 0;
+  padding: 0.8rem 1rem;
   border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+  margin: 0.2rem 0;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.05);
+}
+
+.mobile-nav a:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateX(5px);
 }
 
 .mobile-nav a:last-child {
@@ -94,6 +137,11 @@ body {
 .mobile-main {
   padding: 1rem;
   flex: 1;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  margin: 0.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .mobile-grid {
@@ -105,21 +153,268 @@ body {
 
 .mobile-card {
   background: rgba(255,255,255,0.1);
-  border-radius: 12px;
+  border-radius: 16px;
   text-decoration: none;
   color: white;
-  padding: 1rem;
+  padding: 1.2rem 0.8rem;
   text-align: center;
   font-size: 1rem;
-  transition: background 0.3s, transform 0.2s;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
 }
 
 .mobile-card:hover {
   background: rgba(255,255,255,0.2);
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Стили для карточек статей и постов */
+.articles-container, .posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
 }
+
+.article-card, .post-card {
+  background: rgba(255,255,255,0.06);
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.article-card:hover, .post-card:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+.article-header, .post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.article-header h3, .post-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.article-date, .post-date {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.article-desc, .post-text {
+  margin-top: 0.5rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.read-more {
+  margin-top: 0.8rem;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(45deg, var(--accent-from), var(--accent-to));
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.read-more:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(214, 40, 40, 0.3);
+}
+
+/* Стили для контактов */
+.contact-card {
+  background: rgba(255,255,255,0.06);
+  padding: 1.2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-top: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+}
+
+.contact-item a {
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.contact-item a:hover {
+  color: var(--accent-from);
+  transform: translateX(3px);
+}
+
+/* Пагинация */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.page-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.page-btn.active {
+  background: rgba(255, 255, 255, 0.35);
+  color: #222;
+  font-weight: bold;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Галерея */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.gallery-item {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+/* Модальное окно */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.modal.open {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal img {
+  max-width: 95%;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+
+.modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  padding: 0 15px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-nav:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.modal-prev { left: 10px; }
+.modal-next { right: 10px; }
