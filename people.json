@@ -5,5 +5,12 @@
     "photo": "chick.jpg",
     "description": "НЕтипичная личность с нотками инопланетного",
     "link": "chickin.html"
+  },
+  {
+    "name": "Роман Whatafuckyou",
+    "nick": "Рома?!",
+    "photo": "roma.jpg",
+    "description": "Лучший техно-автор",
+    "link": "whatafuckyou.html"
   }
 ]
