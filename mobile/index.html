@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZakatCloud Mobile</title>
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <div class="mobile-app">
+    <header class="mobile-header glass">
+      <div class="logo">
+        <div class="logo-icon">Z</div>
+        <div class="logo-text">ZakatCloud</div>
+      </div>
+      <button class="menu-btn" id="menuToggle">☰</button>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../posts.html">📰 Посты</a>
+      <a href="../articles.html">📘 Софт и статьи</a>
+      <a href="../gallery.html">🖼 Галерея</a>
+      <a href="../contacts.html">📞 Контакты</a>
+    </nav>
+
+    <main class="mobile-main glass">
+      <h1>Привет, это ZakatCloud 📱</h1>
+      <p>Моя личная база данных, софт и заметки.</p>
+
+      <div class="mobile-grid">
+        <a href="../posts.html" class="mobile-card">📰 Посты</a>
+        <a href="../articles.html" class="mobile-card">📘 Софт и статьи</a>
+        <a href="../gallery.html" class="mobile-card">🖼 Галерея</a>
+        <a href="../contacts.html" class="mobile-card">📞 Контакты</a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("mobileNav").classList.toggle("open");
+    });
+  </script>
+</body>
+</html>

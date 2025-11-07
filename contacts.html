@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Контакты - Zakat Cloud</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+    const currentPath = window.location.pathname;
+    if (isMobile && !currentPath.includes("/mobile")) {
+      window.location.href = "/mobile/contacts.html";
+    }
+  </script>
+</head>
+<body>
+  <div class="animated-bg"></div>
+
+  <div class="app">
+    <aside class="sidebar glass">
+      <div class="logo">
+        <div class="logo-icon">Z</div>
+        <div class="logo-text">ZakatCloud</div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item" href="index.html">Главная</a>
+        <a class="nav-item" href="posts.html">Посты</a>
+        <a class="nav-item" href="articles.html">Софт и статьи</a>
+        <a class="nav-item" href="gallery.html">Галерея</a>
+        <a class="nav-item active" href="contacts.html">Контакты</a>
+      </nav>
+    </aside>
+
+    <main class="main glass">
+      <header class="main-header">
+        <h1>Свяжись со мной</h1>
+        <p class="subtitle">Здесь вы найдете мои контакты для связи и сотрудничества.</p>
+      </header>
+
+      <section class="content">
+        <div class="big-card contact-card">
+          <h2>Контактная информация</h2>
+          <div class="contact-grid">
+            <div class="contact-item">
+              <span>📱 Telegram:</span>
+              <a href="https://t.me/cleanmyworld" target="_blank">t.me/cleanmyworld</a>
+            </div>
+            <div class="contact-item">
+              <span>📞 Телефон:</span>
+              <a href="tel:+8888888888">+8 888 888 888</a>
+            </div>
+            <div class="contact-item">
+              <span>🌍 Город, страна:</span>
+              <span>Омск, Россия</span>
+            </div>
+            <div class="contact-item">
+              <span>💼 Сфера деятельности:</span>
+              <span>Недо-разработчик</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div>© <span id="year"></span> ZakatCloud</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
