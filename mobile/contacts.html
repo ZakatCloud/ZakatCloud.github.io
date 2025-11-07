@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Контакты — ZakatCloud Mobile</title>
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <div class="mobile-app">
+    <header class="mobile-header glass">
+      <div class="logo">
+        <div class="logo-icon">Z</div>
+        <div class="logo-text">ZakatCloud</div>
+      </div>
+      <button class="menu-btn" id="menuToggle">☰</button>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../posts.html">📰 Посты</a>
+      <a href="../articles.html">📘 Софт и статьи</a>
+      <a href="../gallery.html">🖼 Галерея</a>
+      <a href="../contacts.html">📞 Контакты</a>
+    </nav>
+
+    <main class="mobile-main glass">
+      <h1>Контакты 📞</h1>
+      <p>Свяжись со мной для сотрудничества.</p>
+
+      <div class="contact-card">
+        <div class="contact-item">
+          <span>📱 Telegram:</span>
+          <a href="https://t.me/cleanmyworld" target="_blank">@cleanmyworld</a>
+        </div>
+        <div class="contact-item">
+          <span>📞 Телефон:</span>
+          <a href="tel:+8888888888">+8 888 888 888</a>
+        </div>
+        <div class="contact-item">
+          <span>🌍 Город:</span>
+          <span>Омск, Россия</span>
+        </div>
+        <div class="contact-item">
+          <span>💼 Деятельность:</span>
+          <span>Недо-разработчик</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("mobileNav").classList.toggle("open");
+    });
+  </script>
+</body>
+</html>

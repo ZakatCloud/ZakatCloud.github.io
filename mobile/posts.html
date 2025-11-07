@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Посты — ZakatCloud Mobile</title>
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <div class="mobile-app">
+    <header class="mobile-header glass">
+      <div class="logo">
+        <div class="logo-icon">Z</div>
+        <div class="logo-text">ZakatCloud</div>
+      </div>
+      <button class="menu-btn" id="menuToggle">☰</button>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../posts.html">📰 Посты</a>
+      <a href="../articles.html">📘 Софт и статьи</a>
+      <a href="../gallery.html">🖼 Галерея</a>
+      <a href="../contacts.html">📞 Контакты</a>
+    </nav>
+
+    <main class="mobile-main glass">
+      <h1>Посты 📰</h1>
+      <p>Последние записи и мысли.</p>
+
+      <div id="posts-container" class="posts-container"></div>
+      <div id="pagination" class="pagination"></div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("mobileNav").classList.toggle("open");
+    });
+
+    const POSTS_PER_PAGE = 5;
+    let currentPage = 1;
+    let posts = [];
+
+    function renderPosts() {
+      const container = document.getElementById("posts-container");
+      container.innerHTML = "";
+
+      const start = (currentPage - 1) * POSTS_PER_PAGE;
+      const end = start + POSTS_PER_PAGE;
+      const visiblePosts = posts.slice(start, end);
+
+      visiblePosts.forEach(post => {
+        const postHTML = `
+          <div class="post-card">
+            <div class="post-header">
+              <h3>${post.title}</h3>
+              <span class="post-date">${post.date}</span>
+            </div>
+            <p class="post-text">${post.text}</p>
+          </div>
+        `;
+        container.innerHTML += postHTML;
+      });
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+
+      const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+      if (totalPages <= 1) return;
+
+      const addButton = (num, text = num) => {
+        const btn = document.createElement("button");
+        btn.textContent = text;
+        btn.className = "page-btn" + (num === currentPage ? " active" : "");
+        btn.onclick = () => {
+          currentPage = num;
+          renderPosts();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        pagination.appendChild(btn);
+      };
+
+      if (currentPage > 1) addButton(currentPage - 1, '‹');
+      
+      let startPage = Math.max(1, currentPage - 1);
+      let endPage = Math.min(totalPages, currentPage + 1);
+
+      for (let i = startPage; i <= endPage; i++) addButton(i);
+
+      if (currentPage < totalPages) addButton(currentPage + 1, '›');
+    }
+
+    fetch("../posts.json")
+      .then(r => r.json())
+      .then(data => {
+        posts = data;
+        renderPosts();
+      })
+      .catch(err => {
+        console.error("Ошибка загрузки постов:", err);
+        document.getElementById("posts-container").innerHTML = "<p>Не удалось загрузить посты.</p>";
+      });
+  </script>
+</body>
+</html>

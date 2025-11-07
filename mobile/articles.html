@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Софт и статьи — ZakatCloud Mobile</title>
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+  <div class="mobile-app">
+    <header class="mobile-header glass">
+      <div class="logo">
+        <div class="logo-icon">Z</div>
+        <div class="logo-text">ZakatCloud</div>
+      </div>
+      <button class="menu-btn" id="menuToggle">☰</button>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../posts.html">📰 Посты</a>
+      <a href="../articles.html">📘 Софт и статьи</a>
+      <a href="../gallery.html">🖼 Галерея</a>
+      <a href="../contacts.html">📞 Контакты</a>
+    </nav>
+
+    <main class="mobile-main glass">
+      <h1>Софт и статьи 📘</h1>
+      <p>Интересные заметки, мои проекты и программные эксперименты.</p>
+
+      <div id="articles-container" class="articles-container"></div>
+      <div id="pagination" class="pagination"></div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("mobileNav").classList.toggle("open");
+    });
+
+    const ARTICLES_PER_PAGE = 3;
+    let currentPage = 1;
+    let articles = [];
+
+    function renderArticles() {
+      const container = document.getElementById("articles-container");
+      container.innerHTML = "";
+
+      const start = (currentPage - 1) * ARTICLES_PER_PAGE;
+      const end = start + ARTICLES_PER_PAGE;
+      const visible = articles.slice(start, end);
+
+      visible.forEach(article => {
+        const card = `
+          <div class="article-card">
+            <div class="article-header">
+              <h3>${article.title}</h3>
+              <span class="article-date">${article.date}</span>
+            </div>
+            <p class="article-desc">${article.description}</p>
+            <a href="${article.link}" class="read-more" target="_blank">Читать полностью →</a>
+          </div>
+        `;
+        container.innerHTML += card;
+      });
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+
+      const totalPages = Math.ceil(articles.length / ARTICLES_PER_PAGE);
+      if (totalPages <= 1) return;
+
+      const addButton = (num, text = num) => {
+        const btn = document.createElement("button");
+        btn.textContent = text;
+        btn.className = "page-btn" + (num === currentPage ? " active" : "");
+        btn.onclick = () => {
+          currentPage = num;
+          renderArticles();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        pagination.appendChild(btn);
+      };
+
+      if (currentPage > 1) addButton(currentPage - 1, '‹');
+      
+      let startPage = Math.max(1, currentPage - 1);
+      let endPage = Math.min(totalPages, currentPage + 1);
+
+      for (let i = startPage; i <= endPage; i++) addButton(i);
+
+      if (currentPage < totalPages) addButton(currentPage + 1, '›');
+    }
+
+    fetch("../articles.json")
+      .then(r => r.json())
+      .then(data => { articles = data; renderArticles(); })
+      .catch(err => {
+        console.error("Ошибка загрузки статей:", err);
+        document.getElementById("articles-container").innerHTML = "<p>Не удалось загрузить статьи.</p>";
+      });
+  </script>
+</body>
+</html>

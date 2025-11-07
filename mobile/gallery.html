@@ -2,152 +2,95 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Галерея — ZakatCloud</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Галерея — ZakatCloud Mobile</title>
+  <link rel="stylesheet" href="mobile.css" />
   <style>
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       margin-top: 1rem;
     }
 
     .gallery-item {
-      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
       overflow: hidden;
-      border-radius: 10px;
-      cursor: pointer;
       background: rgba(255,255,255,0.08);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .gallery-item:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 10px rgba(255,255,255,0.3);
     }
 
     .gallery-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
 
-    /* модалка */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.9);
       justify-content: center;
       align-items: center;
-      z-index: 100;
-    }
-
-    .modal img {
-      max-width: 90%;
-      max-height: 85vh;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
-      animation: fadeIn 0.3s ease;
+      z-index: 1000;
     }
 
     .modal.open {
       display: flex;
     }
 
+    .modal img {
+      max-width: 95%;
+      max-height: 80vh;
+      border-radius: 8px;
+    }
+
     .modal-close {
       position: absolute;
       top: 20px;
-      right: 30px;
+      right: 20px;
       font-size: 2rem;
       color: white;
       cursor: pointer;
-      user-select: none;
     }
 
     .modal-nav {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: white;
       cursor: pointer;
-      user-select: none;
       padding: 0 15px;
     }
 
     .modal-prev { left: 0; }
     .modal-next { right: 0; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.98); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .pagination {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .page-btn {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .page-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
-    }
-
-    .page-btn.active {
-      background: rgba(255, 255, 255, 0.35);
-      color: #222;
-      font-weight: bold;
-    }
   </style>
-<script>
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-  const currentPath = window.location.pathname;
-  if (isMobile && !currentPath.includes("/mobile")) {
-    window.location.href = "/mobile/gallery.html";
-  }
-</script>
 </head>
 <body>
-  <div class="animated-bg"></div>
-
-  <div class="app">
-    <aside class="sidebar glass">
+  <div class="mobile-app">
+    <header class="mobile-header glass">
       <div class="logo">
         <div class="logo-icon">Z</div>
         <div class="logo-text">ZakatCloud</div>
       </div>
+      <button class="menu-btn" id="menuToggle">☰</button>
+    </header>
 
-      <nav class="nav">
-        <a class="nav-item" href="index.html">Главная</a>
-        <a class="nav-item" href="posts.html">Посты</a>
-        <a class="nav-item" href="articles.html">Софт и статьи</a>
-        <a class="nav-item active" href="gallery.html">Галерея</a>
-        <a class="nav-item" href="contacts.html">Контакты</a>
-      </nav>
-    </aside>
+    <nav class="mobile-nav" id="mobileNav">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../posts.html">📰 Посты</a>
+      <a href="../articles.html">📘 Софт и статьи</a>
+      <a href="../gallery.html">🖼 Галерея</a>
+      <a href="../contacts.html">📞 Контакты</a>
+    </nav>
 
-    <main class="main glass">
-      <h1>Галерея</h1>
+    <main class="mobile-main glass">
+      <h1>Галерея 🖼</h1>
       <p>Мой личный фотоальбом.</p>
 
       <div id="gallery" class="gallery-grid"></div>
@@ -155,7 +98,6 @@
     </main>
   </div>
 
-  <!-- модалка -->
   <div class="modal" id="imageModal">
     <span class="modal-close" id="modalClose">&times;</span>
     <span class="modal-nav modal-prev" id="prevImg">‹</span>
@@ -164,10 +106,13 @@
   </div>
 
   <script>
-    // 🔧 сюда впиши имена файлов из /images/
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.getElementById("mobileNav").classList.toggle("open");
+    });
+
     const images = [
       "girls-an-anime-city.jpg",
-      "bidon.webp",
+      "bidon.webp", 
       "putana.webp"
     ];
 
@@ -185,7 +130,7 @@
       visible.forEach((img, i) => {
         const div = document.createElement('div');
         div.className = 'gallery-item';
-        div.innerHTML = `<img src="images/${img}" alt="${img}" loading="lazy">`;
+        div.innerHTML = `<img src="../images/${img}" alt="${img}" loading="lazy">`;
         div.onclick = () => openModal(start + i);
         gallery.appendChild(div);
       });
@@ -199,34 +144,29 @@
       const totalPages = Math.ceil(images.length / IMAGES_PER_PAGE);
       if (totalPages <= 1) return;
 
-      const maxVisible = 5;
-      const start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-      const end = Math.min(totalPages, start + maxVisible - 1);
-
       const addBtn = (num, label = num) => {
         const btn = document.createElement('button');
         btn.className = 'page-btn' + (num === currentPage ? ' active' : '');
         btn.textContent = label;
-        btn.onclick = () => { currentPage = num; renderGallery(); window.scrollTo({top: 0, behavior: 'smooth'}); };
+        btn.onclick = () => { 
+          currentPage = num; 
+          renderGallery(); 
+          window.scrollTo({top: 0, behavior: 'smooth'}); 
+        };
         pagination.appendChild(btn);
       };
 
       if (currentPage > 1) addBtn(currentPage - 1, '‹');
-      if (start > 1) { addBtn(1); if (start > 2) pagination.append('…'); }
-
-      for (let i = start; i <= end; i++) addBtn(i);
-
-      if (end < totalPages) { if (end < totalPages - 1) pagination.append('…'); addBtn(totalPages); }
+      addBtn(currentPage);
       if (currentPage < totalPages) addBtn(currentPage + 1, '›');
     }
 
-    // модалка
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImg');
 
     function openModal(index) {
       currentIndex = index;
-      modalImg.src = `images/${images[currentIndex]}`;
+      modalImg.src = `../images/${images[currentIndex]}`;
       modal.classList.add('open');
     }
 
@@ -239,7 +179,7 @@
 
     function changeImg(step) {
       currentIndex = (currentIndex + step + images.length) % images.length;
-      modalImg.src = `images/${images[currentIndex]}`;
+      modalImg.src = `../images/${images[currentIndex]}`;
     }
 
     renderGallery();
