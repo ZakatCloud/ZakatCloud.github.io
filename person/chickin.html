@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Данил Чикин — ZakatCloud</title>
   <link rel="stylesheet" href="../style.css" />
+<script>
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+  const currentPath = window.location.pathname;
+  if (isMobile && !currentPath.includes("/mobile")) {
+    window.location.href = "/mobile/person/chickin.html";
+  }
+</script>
 </head>
 <body>
   <div class="animated-bg"></div>
