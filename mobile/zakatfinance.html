@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZakatFinance - Очистка денег</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #0a5c36;
+            --secondary-color: #0d7a46;
+            --accent-color: #12b76a;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0a3c2a, #0a5c36, #0d7a46, #0a5c36);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Анимация загрузки */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Основной контент */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease;
+            flex-wrap: wrap;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(18, 183, 106, 0.3);
+            white-space: nowrap;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(18, 183, 106, 0.4);
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.8rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(18, 183, 106, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(18, 183, 106, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+        }
+
+        /* Стеклянные карточки */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .mini-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .recent-operations {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .operations-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .operation-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .operation-item:last-child {
+            border-bottom: none;
+        }
+
+        .operation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(18, 183, 106, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+        }
+
+        .operation-content {
+            flex: 1;
+        }
+
+        .operation-title {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .operation-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tool-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .copyright {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Страницы */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Схема очистки */
+        .cleaning-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 3rem 0;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .cleaning-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-color);
+            z-index: -1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 23%;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(18, 183, 106, 0.3);
+        }
+
+        .step-content h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Тарифы */
+        .pricing-plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .pricing-card {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: 'ПОПУЛЯРНЫЙ';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* Таблица комиссий */
+        .fees-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .fees-table th, .fees-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fees-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        .fees-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            nav ul {
+                gap: 1rem;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .cleaning-steps {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .cleaning-steps::before {
+                display: none;
+            }
+
+            .step {
+                width: 100%;
+            }
+            
+            .features, .tools, .pricing-plans {
+                grid-template-columns: 1fr;
+            }
+            
+            .mini-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+            
+            .contact-btn {
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .mini-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Анимация загрузки -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <i class="fas fa-coins"></i>
+            </div>
+            <h2>ZakatFinance</h2>
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="logo-text">ZakatFinance</div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link" data-page="home"><i class="fas fa-home"></i> Главная</a></li>
+                    <li><a href="#" class="nav-link" data-page="cleaning"><i class="fas fa-sync"></i> Очистка</a></li>
+                    <li><a href="#" class="nav-link" data-page="pricing"><i class="fas fa-tags"></i> Тарифы</a></li>
+                </ul>
+            </nav>
+            <a href="https://t.me/cleanmyworld" class="contact-btn" target="_blank">
+                <i class="fab fa-telegram"></i> Обратиться к нам
+            </a>
+        </header>
+
+        <!-- Главная страница -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <h1>ZakatFinance - Очистка денег</h1>
+                <p>Профессиональный сервис для легальной очистки средств с минимальными комиссиями и максимальной безопасностью</p>
+                <div class="hero-buttons">
+                    <a href="https://t.me/cleanmyworld" class="btn" target="_blank">
+                        <i class="fab fa-telegram"></i> Начать очистку
+                    </a>
+                    <a href="#" class="btn btn-secondary nav-link" data-page="cleaning">Как это работает</a>
+                </div>
+            </div>
+
+            <div class="mini-stats">
+                <div class="glass-card stat-card">
+                    <div class="stat-value">8,427 ₽</div>
+                    <div class="stat-label">Средняя операция</div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-value">14,350 ₽</div>
+                    <div class="stat-label">Максимальная сумма</div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-value">97.3%</div>
+                    <div class="stat-label">Успешных транзакций</div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-value">1-2 дня</div>
+                    <div class="stat-label">Среднее время</div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Полная легальность</h3>
+                    <p>Все операции проводятся в рамках действующего законодательства через официальные платежные системы</p>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" style="margin-top: 1rem;" target="_blank">
+                        <i class="fab fa-telegram"></i> Узнать подробности
+                    </a>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Высокая скорость</h3>
+                    <p>Очистка средств занимает от 1 до 3 рабочих дней в зависимости от выбранного тарифа</p>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" style="margin-top: 1rem;" target="_blank">
+                        <i class="fab fa-telegram"></i> Узнать сроки
+                    </a>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Конфиденциальность</h3>
+                    <p>Мы гарантируем полную анонимность и защиту данных наших клиентов</p>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" style="margin-top: 1rem;" target="_blank">
+                        <i class="fab fa-telegram"></i> Обсудить условия
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-card recent-operations">
+                <h2><i class="fas fa-history"></i> Последние операции</h2>
+                <ul class="operations-list">
+                    <li class="operation-item">
+                        <div class="operation-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="operation-content">
+                            <div class="operation-title">Очистка завершена</div>
+                            <div class="operation-time">2 часа назад</div>
+                        </div>
+                        <div class="operation-amount">+7,840 ₽</div>
+                    </li>
+                    <li class="operation-item">
+                        <div class="operation-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="operation-content">
+                            <div class="operation-title">Очистка в процессе</div>
+                            <div class="operation-time">5 часов назад</div>
+                        </div>
+                        <div class="operation-amount">12,150 ₽</div>
+                    </li>
+                    <li class="operation-item">
+                        <div class="operation-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="operation-content">
+                            <div class="operation-title">Новая операция</div>
+                            <div class="operation-time">Вчера</div>
+                        </div>
+                        <div class="operation-amount">9,325 ₽</div>
+                    </li>
+                    <li class="operation-item">
+                        <div class="operation-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="operation-content">
+                            <div class="operation-title">Очистка завершена</div>
+                            <div class="operation-time">2 дня назад</div>
+                        </div>
+                        <div class="operation-amount">+14,210 ₽</div>
+                    </li>
+                </ul>
+                <a href="https://t.me/cleanmyworld" class="contact-btn" style="width: 100%; margin-top: 1rem; justify-content: center;" target="_blank">
+                    <i class="fab fa-telegram"></i> Обсудить вашу операцию
+                </a>
+            </div>
+        </section>
+
+        <!-- Страница очистки -->
+        <section id="cleaning" class="page">
+            <div class="hero">
+                <h1>Как происходит очистка средств</h1>
+                <p>Прозрачная и легальная схема преобразования ваших средств в чистые активы</p>
+                <a href="https://t.me/cleanmyworld" class="btn" target="_blank">
+                    <i class="fab fa-telegram"></i> Получить консультацию
+                </a>
+            </div>
+
+            <div class="glass-card">
+                <h2><i class="fas fa-sync"></i> Схема очистки средств</h2>
+                <p style="margin: 1rem 0; line-height: 1.6;">Наш процесс полностью соответствует законодательству и использует легальные финансовые инструменты для преобразования ваших средств.</p>
+                
+                <div class="cleaning-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>DonationAlerts</h3>
+                            <p>Средства поступают через систему DonationAlerts как пожертвования</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Онлайн-эквайринг</h3>
+                            <p>Перевод под видом интернет-покупки в магазине одежды с минимальными комиссиями</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Конвертация</h3>
+                            <p>Преобразование в криптовалюту через безопасные биржи</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Чистые USDT</h3>
+                            <p>Поступление чистых USDT на ваш кошелек (Exodus и другие)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(18, 183, 106, 0.1); border-radius: 10px;">
+                    <h3><i class="fas fa-info-circle"></i> Важная информация</h3>
+                    <p style="margin-top: 0.5rem;">Весь процесс занимает от 1 до 3 рабочих дней и осуществляется в полном соответствии с действующим законодательством. Мы гарантируем конфиденциальность и безопасность всех операций.</p>
+                </div>
+                
+                <a href="https://t.me/cleanmyworld" class="contact-btn" style="width: 100%; margin-top: 1.5rem; justify-content: center;" target="_blank">
+                    <i class="fab fa-telegram"></i> Обсудить детали очистки
+                </a>
+            </div>
+
+            <div class="features" style="margin-top: 3rem;">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Анонимность</h3>
+                    <p>Мы не храним персональные данные клиентов и не передаем их третьим лицам</p>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" style="margin-top: 1rem;" target="_blank">
+                        <i class="fab fa-telegram"></i> Узнать о безопасности
+                    </a>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3>Легальность</h3>
+                    <p>Все операции проводятся через лицензированные платежные системы</p>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" style="margin-top: 1rem;" target="_blank">
+                        <i class="fab fa-telegram"></i> Обсудить легальность
+                    </a>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Поддержка 24/7</h3>
+                    <p>Наша команда всегда готова ответить на ваши вопросы и помочь с операциями</p>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" style="margin-top: 1rem;" target="_blank">
+                        <i class="fab fa-telegram"></i> Написать в поддержку
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Страница тарифов -->
+        <section id="pricing" class="page">
+            <div class="hero">
+                <h1>Тарифы и комиссии</h1>
+                <p>Выберите подходящий тариф для очистки ваших средств</p>
+                <a href="https://t.me/cleanmyworld" class="btn" target="_blank">
+                    <i class="fab fa-telegram"></i> Подобрать тариф
+                </a>
+            </div>
+
+            <div class="pricing-plans">
+                <div class="glass-card pricing-card">
+                    <h3 class="plan-name">Базовый</h3>
+                    <div class="plan-price">5% <span>/ от суммы</span></div>
+                    <ul class="plan-features">
+                        <li>Очистка до 5,000 ₽ в месяц</li>
+                        <li>Срок: 3-5 рабочих дней</li>
+                        <li>Поддержка по email</li>
+                        <li>Базовые отчеты</li>
+                    </ul>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" target="_blank">
+                        <i class="fab fa-telegram"></i> Выбрать тариф
+                    </a>
+                </div>
+                
+                <div class="glass-card pricing-card featured">
+                    <h3 class="plan-name">Профессиональный</h3>
+                    <div class="plan-price">3.5% <span>/ от суммы</span></div>
+                    <ul class="plan-features">
+                        <li>Очистка до 16,000 ₽ в месяц</li>
+                        <li>Срок: 1-3 рабочих дня</li>
+                        <li>Приоритетная поддержка 24/7</li>
+                        <li>Расширенные отчеты</li>
+                        <li>Персональный менеджер</li>
+                    </ul>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" target="_blank">
+                        <i class="fab fa-telegram"></i> Выбрать тариф
+                    </a>
+                </div>
+                
+                <div class="glass-card pricing-card">
+                    <h3 class="plan-name">Премиум</h3>
+                    <div class="plan-price">2% <span>/ от суммы</span></div>
+                    <ul class="plan-features">
+                        <li>Очистка от 16,000 ₽ в месяц</li>
+                        <li>Срок: 1-2 рабочих дня</li>
+                        <li>Эксклюзивная поддержка</li>
+                        <li>Детальная аналитика</li>
+                        <li>Индивидуальные решения</li>
+                    </ul>
+                    <a href="https://t.me/cleanmyworld" class="contact-btn" target="_blank">
+                        <i class="fab fa-telegram"></i> Связаться с нами
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2><i class="fas fa-percentage"></i> Дополнительные комиссии</h2>
+                <table class="fees-table">
+                    <thead>
+                        <tr>
+                            <th>Услуга</th>
+                            <th>Комиссия</th>
+                            <th>Примечание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Срочная обработка (24 часа)</td>
+                            <td>+1% к тарифу</td>
+                            <td>Доступно для тарифов Про и Премиум</td>
+                        </tr>
+                        <tr>
+                            <td>Конвертация в другие криптовалюты</td>
+                            <td>+0.5%</td>
+                            <td>BTC, ETH, BNB и другие</td>
+                        </tr>
+                        <tr>
+                            <td>Вывод на банковскую карту</td>
+                            <td>+2%</td>
+                            <td>Минимум 500 ₽</td>
+                        </tr>
+                        <tr>
+                            <td>Консультация по безопасности</td>
+                            <td>Бесплатно</td>
+                            <td>Для всех клиентов</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <a href="https://t.me/cleanmyworld" class="contact-btn" style="width: 100%; margin-top: 1.5rem; justify-content: center;" target="_blank">
+                    <i class="fab fa-telegram"></i> Обсудить комиссии
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="logo-text">ZakatFinance</div>
+            </div>
+            <div class="footer-links">
+                <a href="https://t.me/cleanmyworld" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+                <a href="#">Конфиденциальность</a>
+                <a href="#">Условия использования</a>
+                <a href="https://t.me/cleanmyworld" target="_blank">Поддержка</a>
+            </div>
+            <div class="copyright">
+                &copy; 2023 ZakatFinance. Все права защищены.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Анимация загрузки
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            setTimeout(function() {
+                loader.classList.add('hidden');
+            }, 1500);
+        });
+
+        // Навигация между страницами
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+                
+                // Скрыть все страницы
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Показать целевую страницу
+                document.getElementById(targetPage).classList.add('active');
+                
+                // Прокрутка к верху
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Анимация появления элементов при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Применяем анимацию к элементам
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s, transform 0.5s';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html
