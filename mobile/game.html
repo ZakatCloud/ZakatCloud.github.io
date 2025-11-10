@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-16: Quantum Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Основные стили для мобильного вида */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d0d1a;
+            color: #c0c0ff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        
+        #game-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #1a1a33;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 1px solid #464687;
+            box-shadow: 0 4px 15px rgba(70, 70, 150, 0.7);
+        }
+        
+        h1 {
+            color: #7aff7a;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+        
+        #story-text-content {
+            background-color: #26264d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+            border: 1px solid #333366;
+            overflow-y: auto;
+        }
+        
+        .action-button {
+            transition: all 0.2s ease-in-out;
+            transform: scale(1);
+        }
+        
+        .action-button:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 0 10px rgba(0, 136, 204, 0.5);
+        }
+        
+        .action-button:disabled {
+            background-color: #464687 !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Стиль для механик */
+        #game-mechanic {
+            background-color: #333366;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(255, 192, 77, 0.4);
+        }
+        
+        .mechanic-title {
+            color: #ffc04d;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-shadow: 0 0 5px rgba(255, 192, 77, 0.6);
+        }
+        
+        .emoji-button {
+            font-size: 1.5em;
+            padding: 15px;
+            background-color: #464687;
+            border: 2px solid #5a5a9a;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .emoji-button:hover:not(:disabled) {
+            background-color: #5a5a9a;
+        }
+        
+        /* Обновленный прогресс-бар для ожидания */
+        .progress-bar {
+            height: 20px;
+            background-color: #464687;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #ffc04d;
+            transition: width 0.3s ease;
+        }
+
+        /* Уведомление о достижении */
+        #achievement-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #7aff7a;
+            color: #1a1a33;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(122, 255, 122, 0.8);
+            font-weight: bold;
+            display: none;
+            z-index: 2000;
+            animation: fadeInOut 5s forwards;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(100px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(100px); }
+        }
+
+        /* Стиль для индикатора Стадии */
+        #stage-indicator {
+            background-color: #333366;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #00ffaa;
+            border: 1px solid #00aa77;
+            box-shadow: 0 0 8px rgba(0, 255, 170, 0.3);
+        }
+    </style>
+</head>
+<body class="selection:bg-teal-700 selection:text-white">
+    <div id="game-container">
+        <h1>T-16: Quantum Protocol</h1>
+        
+        <div class="flex justify-between items-center mb-4 text-sm">
+            <p class="text-yellow-400">Прогресс: <span id="current-part"></span> / 31</p>
+            <div id="stage-indicator">Стадия T-16: <span id="current-stage">1.0</span></div>
+            <button onclick="toggleAchievements()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 rounded-md transition duration-150 text-xs">
+                Достижения
+            </button>
+        </div>
+        
+        <div id="chiksometr-log-container" class="mt-4 p-3 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg hidden">
+            <p class="text-sm font-bold text-red-400">СЕКРЕТНЫЙ ПРОТОКОЛ ФОНДА (Чиксометр):</p>
+            <p id="chiksometr-log-text" class="text-xs italic text-red-200 mt-1"></p>
+        </div>
+        <div id="story-view">
+            <div id="story-text-content" class="text-gray-200"></div>
+        </div>
+
+        <div id="game-mechanic" class="shadow-lg hidden">
+            <div class="mechanic-title" id="mechanic-title"></div>
+
+            <div id="loading-mechanic-container" class="hidden">
+                <p class="mb-3 text-lg font-bold text-teal-400">Инициализация INO-PC: Стабилизация Систем...</p>
+                <div class="progress-bar">
+                    <div id="loading-progress-fill" class="progress-fill bg-teal-500"></div>
+                </div>
+            </div>
+
+            <div id="emoji-hack-container" class="hidden">
+                <p class="mb-3 text-sm">Сопоставьте целевой символ. Цель: <span id="emoji-required-count" class="font-bold text-red-400"></span></p>
+                <div id="challenge-target" class="text-5xl my-4 text-green-400 font-extrabold"></div>
+                <div class="grid grid-cols-3 gap-3" id="emoji-options"></div>
+            </div>
+
+            <div id="math-hack-container" class="hidden">
+                <p class="mb-3 text-sm">Введите правильный результат для стабилизации системы. Цель: <span id="math-required-count" class="font-bold text-red-400"></span></p>
+                <div id="math-problem" class="text-2xl my-4 text-green-400 font-extrabold"></div>
+                <input type="number" id="math-answer" placeholder="Ответ" class="w-full p-3 bg-gray-700 text-white rounded-lg border-none focus:ring-2 focus:ring-yellow-500">
+                <button class="action-button w-full mt-3 bg-yellow-600 hover:bg-yellow-700" onclick="submitMathAnswer()">Подтвердить</button>
+            </div>
+            
+            <div id="coordinate-hack-container" class="hidden">
+                <p class="mb-4 text-sm text-red-300">Введите код для деактивации.</p>
+                <input type="number" id="coordinate-input" placeholder="Код-пароль" class="w-full p-3 bg-gray-700 text-white rounded-lg border-none focus:ring-2 focus:ring-yellow-500">
+                <button class="action-button w-full mt-3 bg-yellow-600 hover:bg-yellow-700" onclick="submitCoordinateHack()">Подтвердить</button>
+            </div>
+
+            <div id="sequence-hack-container" class="hidden">
+                <p class="mb-3 text-sm">Повторите последовательность стрелок (используйте клавиатуру или кнопки). Цель: <span id="sequence-required-count" class="font-bold text-red-400"></span></p>
+                <div id="sequence-display" class="text-4xl my-4 text-yellow-400 font-extrabold flex justify-center space-x-3 h-12 items-center">?</div>
+                <div id="sequence-buttons" class="grid grid-cols-4 gap-2">
+                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowUp">⬆️</button>
+                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowDown">⬇️</button>
+                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowLeft">⬅️</button>
+                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowRight">➡️</button>
+                </div>
+            </div>
+
+            <div id="filter-hack-container" class="hidden">
+                <p class="mb-3 text-sm">Отфильтруйте "Чистый Сигнал" (тот, что появляется реже всего). Цель: <span id="filter-required-count" class="font-bold text-red-400"></span></p>
+                <div id="filter-options" class="grid grid-cols-3 gap-3"></div>
+            </div>
+        </div>
+
+        <button id="next-button" class="action-button w-full mt-5 bg-blue-600 text-white hover:bg-blue-700" onclick="handleNextClick()">Далее</button>
+        
+        <button id="reset-button" class="action-button w-full mt-3 bg-red-600 text-white hover:bg-red-700" onclick="resetGame()">Начать заново</button>
+    </div>
+
+    <div id="achievement-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-30">
+        <div class="bg-indigo-900 p-6 rounded-lg shadow-2xl w-11/12 max-w-md border border-indigo-700">
+            <h2 class="text-2xl font-bold text-yellow-400 mb-4 border-b pb-2 border-indigo-700">Протоколы Достижений</h2>
+            <div id="achievement-list" class="h-64 overflow-y-auto"></div>
+            <button class="action-button w-full mt-4 bg-indigo-600 hover:bg-indigo-700" onclick="toggleAchievements()">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="achievement-notification"></div>
+
+    <script>
+        // === КОНФИГУРАЦИЯ ИСТОРИИ И ДОСТИЖЕНИЙ ===
+        const EMOJIS = ['🚀', '💻', '🔮', '🦠', '💥', '🔑', '⚡', '🤖', '🛰️', '🔥', '⚙️', '🧊'];
+        const SEQUENCE_EMOJIS = { 'ArrowUp': '⬆️', 'ArrowDown': '⬇️', 'ArrowLeft': '⬅️', 'ArrowRight': '➡️' };
+        let storyData = []; // Глобальная переменная для хранения сюжета
+
+        const ACHIEVEMENTS = {
+            'first_hack': { title: 'Первый Взлом', description: 'Успешно запустить вирус-заглушку в INO-PC.', part: 3 },
+            'fire_starter': { title: 'С пылу, с жару!', description: 'Вызвать электромагнитный импульс и пожар в Харино.', part: 6 },
+            'repair_expert': { title: 'Нано-Мастер', description: 'Успешно восстановить парализованную руку.', part: 14 },
+            'cooldown': { title: 'Холодное Ядро', description: 'Успешный транзит в холодильном вагоне.', part: 20 },
+            'quantum_jump': { title: 'Квантовый Прыжок', description: 'Достигнуть финала истории (перенесен в другую реальность).', part: 31 }
+        };
+
+        // --- ФУНКЦИЯ ЗАГРУЗКИ СЮЖЕТА ИЗ JSON ---
+        async function loadStoryData() {
+            try {
+                const response = await fetch('story_data.json');
+                if (!response.ok) {
+                    throw new Error(`Ошибка загрузки сюжета: ${response.statusText}`);
+                }
+                storyData = await response.json();
+                console.log("Сюжет успешно загружен.");
+            } catch (error) {
+                console.error("Не удалось загрузить данные сюжета:", error);
+                document.getElementById('story-text-content').innerHTML = `
+                    <p class="text-red-500 font-bold">КРИТИЧЕСКАЯ ОШИБКА:</p>
+                    <p>Не удалось загрузить данные сюжета (story_data.json). Пожалуйста, убедитесь, что файл находится в той же папке.</p>
+                `;
+                document.getElementById('next-button').disabled = true;
+                throw error;
+            }
+        }
+        
+        // === СОСТОЯНИЕ ИГРЫ ===
+        let gameState = {
+            currentPart: 1,
+            currentStage: 1.0,
+            currentAchievement: 0,
+            achievements: {},
+            mechanicActive: false,
+            // Переменные для механики Loading Pause
+            loadingTimer: null,
+            loadingDuration: 0,
+            loadingStartTime: 0,
+            // Переменные для механики Emoji Hack
+            emojiTarget: '',
+            emojiRequired: 0,
+            emojiCurrent: 0,
+            // Переменные для механики Math Hack
+            mathAnswer: 0,
+            mathRequired: 0,
+            mathCurrent: 0,
+            // Переменные для механики Sequence Hack (НОВЫЕ)
+            sequenceGoal: [],
+            sequencePlayer: [],
+            sequenceRequired: 0,
+            sequenceCurrent: 0,
+            sequenceListenerActive: false,
+            // Переменные для механики Filter Hack (НОВЫЕ)
+            filterTargetEmoji: '',
+            filterRequired: 0,
+            filterCurrent: 0,
+        };
+
+        // === СЛУЖЕБНЫЕ ФУНКЦИИ ===
+        function saveGameState() {
+            localStorage.setItem('t16_gameState', JSON.stringify(gameState));
+            localStorage.setItem('t16_achievements', JSON.stringify(gameState.achievements));
+        }
+
+        function loadGameState() {
+            const savedState = localStorage.getItem('t16_gameState');
+            const savedAchievements = localStorage.getItem('t16_achievements');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+            }
+            if (savedAchievements) {
+                gameState.achievements = JSON.parse(savedAchievements);
+            }
+            // Гарантия, что игра начинается с первой части, если она не завершена
+            if (gameState.currentPart > storyData.length) {
+                 gameState.currentPart = 1;
+            }
+            // Сброс активной механики при загрузке
+            gameState.mechanicActive = false;
+        }
+
+        function resetGame() {
+            if (confirm("Вы уверены, что хотите начать игру заново? Прогресс будет потерян.")) {
+                localStorage.removeItem('t16_gameState');
+                localStorage.removeItem('t16_achievements');
+                gameState = {
+                    currentPart: 1,
+                    currentStage: 1.0,
+                    currentAchievement: 0,
+                    achievements: {},
+                    mechanicActive: false,
+                    loadingTimer: null,
+                    loadingDuration: 0,
+                    loadingStartTime: 0,
+                    emojiTarget: '',
+                    emojiRequired: 0,
+                    emojiCurrent: 0,
+                    mathAnswer: 0,
+                    mathRequired: 0,
+                    mathCurrent: 0,
+                    sequenceGoal: [],
+                    sequencePlayer: [],
+                    sequenceRequired: 0,
+                    sequenceCurrent: 0,
+                    sequenceListenerActive: false,
+                    filterTargetEmoji: '',
+                    filterRequired: 0,
+                    filterCurrent: 0,
+                };
+                // Удаляем слушателя клавиатуры при сбросе
+                document.removeEventListener('keydown', handleSequenceInput);
+                gameState.sequenceListenerActive = false;
+
+                displayStoryPart(gameState.currentPart);
+                updateUI();
+                showAchievementNotification("Протокол сброшен. Начните заново.");
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('current-part').textContent = gameState.currentPart;
+            document.getElementById('current-stage').textContent = gameState.currentStage.toFixed(1);
+            
+            const currentPartData = storyData.find(p => p.part === gameState.currentPart);
+
+            if (!currentPartData) {
+                document.getElementById('next-button').textContent = 'Конец Протокола';
+                document.getElementById('next-button').disabled = true;
+                return;
+            }
+
+            if (gameState.mechanicActive) {
+                document.getElementById('next-button').textContent = 'Взлом Активен...';
+                document.getElementById('next-button').disabled = true;
+                document.getElementById('game-mechanic').classList.remove('hidden');
+            } else if (currentPartData.action === 'hack') {
+                document.getElementById('next-button').textContent = 'Начать Взлом';
+                document.getElementById('next-button').disabled = false;
+                document.getElementById('game-mechanic').classList.remove('hidden');
+            } else if (currentPartData.action === 'finish') {
+                document.getElementById('next-button').textContent = 'Завершить Протокол';
+                document.getElementById('next-button').disabled = false;
+                document.getElementById('game-mechanic').classList.add('hidden');
+            } else {
+                document.getElementById('next-button').textContent = 'Далее';
+                document.getElementById('next-button').disabled = false;
+                document.getElementById('game-mechanic').classList.add('hidden');
+            }
+        }
+
+        function displayStoryPart(partNumber) {
+            const currentPartData = storyData.find(p => p.part === partNumber);
+            if (!currentPartData) return;
+
+            // Обновление состояния
+            gameState.currentPart = partNumber;
+            gameState.currentStage += currentPartData.stageChange;
+
+            // Обновление контента
+            document.getElementById('story-text-content').innerHTML = `
+                <h2 class="font-bold text-lg text-teal-400 mb-2">${currentPartData.part}. ${currentPartData.title}</h2>
+                <p>${currentPartData.text}</p>
+            `;
+
+            // --- Логика Чиксометра ---
+            const logContainer = document.getElementById('chiksometr-log-container');
+            const logText = document.getElementById('chiksometr-log-text');
+            if (currentPartData.agent_log) {
+                logText.innerHTML = currentPartData.agent_log;
+                logContainer.classList.remove('hidden');
+            } else {
+                logContainer.classList.add('hidden');
+                logText.innerHTML = '';
+            }
+            // --- Конец Логики Чиксометра ---
+
+
+            // Установка состояния достижения
+            if (currentPartData.achievement) {
+                unlockAchievement(currentPartData.achievement);
+            }
+
+            // Скрытие всех механик
+            document.getElementById('loading-mechanic-container').classList.add('hidden');
+            document.getElementById('emoji-hack-container').classList.add('hidden');
+            document.getElementById('math-hack-container').classList.add('hidden');
+            document.getElementById('coordinate-hack-container').classList.add('hidden');
+            document.getElementById('sequence-hack-container').classList.add('hidden');
+            document.getElementById('filter-hack-container').classList.add('hidden');
+
+
+            // Подготовка к механике, если она есть
+            if (currentPartData.action === 'hack') {
+                document.getElementById('mechanic-title').textContent = `Запуск: ${currentPartData.title}`;
+            } else {
+                document.getElementById('game-mechanic').classList.add('hidden');
+            }
+            
+            saveGameState();
+            updateUI();
+        }
+
+        function handleNextClick() {
+            const currentPartData = storyData.find(p => p.part === gameState.currentPart);
+            if (!currentPartData) return;
+
+            if (gameState.mechanicActive) return;
+
+            if (currentPartData.action === 'hack') {
+                // Если кликнули на "Начать Взлом", запускаем механику
+                startMechanic(currentPartData.mechanic, currentPartData.difficulty, currentPartData.duration);
+            } else if (currentPartData.action === 'next' && gameState.currentPart < storyData.length) {
+                displayStoryPart(gameState.currentPart + 1);
+            } else if (currentPartData.action === 'finish') {
+                updateUI();
+                // Финальный твист от Чиксометра
+                if (currentPartData.agent_log) {
+                    showAchievementNotification(currentPartData.agent_log.replace('Чиксометр: ', 'ФИНАЛЬНЫЙ ПРОТОКОЛ: '));
+                } else {
+                    showAchievementNotification("История Протокола Т-16 завершена!");
+                }
+            }
+        }
+
+        // === ЛОГИКА ДОСТИЖЕНИЙ ===
+        function unlockAchievement(key) {
+            if (!gameState.achievements[key]) {
+                gameState.achievements[key] = true;
+                gameState.currentAchievement++;
+                showAchievementNotification(`ДОСТИЖЕНИЕ: ${ACHIEVEMENTS[key].title}`);
+                saveGameState();
+            }
+        }
+
+        function toggleAchievements() {
+            const modal = document.getElementById('achievement-modal');
+            const list = document.getElementById('achievement-list');
+            list.innerHTML = '';
+            Object.keys(ACHIEVEMENTS).forEach(key => {
+                const achievement = ACHIEVEMENTS[key];
+                const unlocked = gameState.achievements[key];
+                const item = document.createElement('div');
+                item.className = `p-3 mb-2 rounded-lg ${unlocked ? 'bg-green-700' : 'bg-gray-700'} transition duration-200 ease-in-out`;
+                item.innerHTML = `
+                    <p class="font-bold text-lg ${unlocked ? 'text-white' : 'text-gray-400'}">${unlocked ? '✅ ' : '🔒 '} ${achievement.title}</p>
+                    <p class="text-sm ${unlocked ? 'text-gray-100' : 'text-gray-500'}">${achievement.description}</p>
+                `;
+                list.appendChild(item);
+            });
+            modal.classList.toggle('hidden');
+        }
+
+        function showAchievementNotification(message) {
+            const notification = document.getElementById('achievement-notification');
+            notification.textContent = message;
+            // Сброс анимации
+            notification.style.animation = 'none';
+            notification.offsetHeight; /* trigger reflow */
+            notification.style.animation = null; 
+            
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // === ЛОГИКА МЕХАНИК ВЗЛОМА ===
+
+        function startMechanic(mechanicType, difficulty, duration) {
+            gameState.mechanicActive = true;
+            document.getElementById('next-button').textContent = 'Взлом Активен...';
+            document.getElementById('next-button').disabled = true;
+
+            if (mechanicType === 'loading_pause') {
+                document.getElementById('mechanic-title').textContent = 'Протокол INO-PC: Стабилизация Систем';
+                startLoadingPause(duration || 5000);
+            } else if (mechanicType === 'emoji') {
+                document.getElementById('mechanic-title').textContent = 'Эмоциональный Протокол: Квантовый Шум';
+                startEmojiHack(difficulty || 3);
+            } else if (mechanicType === 'math') {
+                document.getElementById('mechanic-title').textContent = 'Нейро-Матрица: Ресинхронизация';
+                startMathHack(difficulty || 3);
+            } else if (mechanicType === 'coordinate') {
+                document.getElementById('mechanic-title').textContent = 'Координатор: Корректировка Частоты';
+                startCoordinateHack();
+            } else if (mechanicType === 'sequence') {
+                document.getElementById('mechanic-title').textContent = 'Сверхскоростной Протокол: Моторный Рефлекс';
+                startSequenceHack(difficulty || 3);
+            } else if (mechanicType === 'filter') {
+                document.getElementById('mechanic-title').textContent = 'Психологическая Частота: Изоляция Сигнала';
+                startFilterHack(difficulty || 3);
+            }
+            updateUI();
+        }
+
+        function finishMechanic(mechanicType, success) {
+            gameState.mechanicActive = false;
+            
+            // Сброс таймера, если это была загрузка
+            if (mechanicType === 'loading_pause' && gameState.loadingTimer) {
+                clearInterval(gameState.loadingTimer);
+                document.getElementById('loading-progress-fill').style.width = '100%';
+                setTimeout(() => {
+                    document.getElementById('loading-mechanic-container').classList.add('hidden');
+                }, 500);
+            }
+
+            // Скрытие контейнера механики
+            document.getElementById('game-mechanic').classList.add('hidden');
+            document.getElementById('sequence-hack-container').classList.add('hidden'); // Скрыть после завершения
+
+            if (success) {
+                showAchievementNotification("Взлом УСПЕШЕН. Переход к следующему Протоколу.");
+                displayStoryPart(gameState.currentPart + 1);
+            } else {
+                showAchievementNotification("Сбой операции. Повторите попытку.");
+                // Логика сброса уже внутри конкретной механики
+                updateUI();
+            }
+        }
+
+        // --- 1. Loading Pause ---
+        function startLoadingPause(duration) {
+            document.getElementById('loading-mechanic-container').classList.remove('hidden');
+            document.getElementById('loading-progress-fill').style.width = '0%';
+            gameState.loadingDuration = duration;
+            gameState.loadingStartTime = Date.now();
+            if (gameState.loadingTimer) clearInterval(gameState.loadingTimer);
+            gameState.loadingTimer = setInterval(() => {
+                const elapsed = Date.now() - gameState.loadingStartTime;
+                const percent = (elapsed / gameState.loadingDuration) * 100;
+                document.getElementById('loading-progress-fill').style.width = `${Math.min(100, percent)}%`;
+                if (elapsed >= gameState.loadingDuration) {
+                    finishMechanic('loading_pause', true);
+                }
+            }, 100);
+        }
+
+        // --- 2. Emoji Hack ---
+        function startEmojiHack(difficulty) {
+            document.getElementById('emoji-hack-container').classList.remove('hidden');
+            gameState.emojiRequired = difficulty;
+            gameState.emojiCurrent = 0;
+            document.getElementById('emoji-required-count').textContent = `${gameState.emojiCurrent} / ${gameState.emojiRequired}`;
+            generateEmojiChallenge();
+        }
+
+        function generateEmojiChallenge() {
+            // Выбор целевого эмодзи
+            const targetEmoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+            gameState.emojiTarget = targetEmoji;
+            document.getElementById('challenge-target').textContent = targetEmoji;
+
+            // Генерация опций (6 кнопок, одна из которых - целевая)
+            const optionsContainer = document.getElementById('emoji-options');
+            optionsContainer.innerHTML = '';
+            
+            const options = new Set();
+            options.add(targetEmoji);
+
+            while (options.size < 6) {
+                options.add(EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
+            }
+
+            // Преобразование Set в массив и перемешивание
+            let shuffledOptions = Array.from(options).sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach(emoji => {
+                const button = document.createElement('button');
+                button.className = 'emoji-button';
+                button.textContent = emoji;
+                button.onclick = () => handleEmojiClick(emoji);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleEmojiClick(emoji) {
+            if (!gameState.mechanicActive) return;
+
+            if (emoji === gameState.emojiTarget) {
+                gameState.emojiCurrent++;
+                showAchievementNotification("Совпадение! Прогресс +1.");
+                if (gameState.emojiCurrent >= gameState.emojiRequired) {
+                    finishMechanic('emoji', true);
+                } else {
+                    document.getElementById('emoji-required-count').textContent = `${gameState.emojiCurrent} / ${gameState.emojiRequired}`;
+                    generateEmojiChallenge(); // Следующий раунд
+                }
+            } else {
+                showAchievementNotification("Сбой. Потеря прогресса.");
+                // Сброс прогресса в раунде
+                gameState.emojiCurrent = 0;
+                document.getElementById('emoji-required-count').textContent = `${gameState.emojiCurrent} / ${gameState.emojiRequired}`;
+                generateEmojiChallenge();
+            }
+        }
+
+        // --- 3. Math Hack ---
+        function startMathHack(difficulty) {
+            document.getElementById('math-hack-container').classList.remove('hidden');
+            gameState.mathRequired = difficulty;
+            gameState.mathCurrent = 0;
+            document.getElementById('math-required-count').textContent = `${gameState.mathCurrent} / ${gameState.mathRequired}`;
+            document.getElementById('math-answer').value = '';
+            generateMathProblem();
+        }
+
+        function generateMathProblem() {
+            let a, b, operator, problem;
+            let correctAnswer;
+            const currentPartData = storyData.find(p => p.part === gameState.currentPart);
+            const difficulty = currentPartData.difficulty || 3;
+
+            // Логика генерации задачи в зависимости от сложности
+            if (difficulty === 5) {
+                a = Math.floor(Math.random() * 20) + 10;
+                b = Math.floor(Math.random() * 9) + 2;
+                operator = Math.random() < 0.5 ? '*' : '+';
+                if (operator === '*' && b === 1) b = 2; 
+                if (operator === '+' && a > 30) a = 30;
+            } else if (difficulty === 4) {
+                a = Math.floor(Math.random() * 50) + 5;
+                b = Math.floor(Math.random() * 20) + 5;
+                operator = Math.random() < 0.6 ? '+' : '-';
+                if (operator === '-' && a < b) [a, b] = [b, a]; 
+            } else {
+                a = Math.floor(Math.random() * 10) + 1;
+                b = Math.floor(Math.random() * 10) + 1;
+                operator = '+';
+            }
+
+            problem = `${a} ${operator} ${b}`;
+
+            // Вычисление ответа (Безопасная реализация вместо eval)
+            switch (operator) {
+                case '+':
+                    correctAnswer = a + b;
+                    break;
+                case '-':
+                    correctAnswer = a - b;
+                    break;
+                case '*':
+                    correctAnswer = a * b;
+                    break;
+                default:
+                    correctAnswer = a + b; 
+            }
+
+            document.getElementById('math-problem').textContent = problem + ' = ?';
+            gameState.mathAnswer = correctAnswer;
+        }
+
+        function submitMathAnswer() {
+            if (!gameState.mechanicActive) return;
+            
+            const answer = document.getElementById('math-answer').value;
+            document.getElementById('math-answer').value = ''; // Сброс поля ввода
+
+            if (parseInt(answer) === gameState.mathAnswer) {
+                gameState.mathCurrent++;
+                showAchievementNotification("Стабилизация +1. Успешно.");
+                document.getElementById('math-required-count').textContent = `${gameState.mathCurrent} / ${gameState.mathRequired}`;
+                
+                if (gameState.mathCurrent >= gameState.mathRequired) {
+                    finishMechanic('math', true);
+                } else {
+                    generateMathProblem(); // Следующий раунд
+                }
+            } else {
+                showAchievementNotification("Ошибка калибровки. Сброс прогресса.");
+                // Сброс прогресса в раунде
+                gameState.mathCurrent = 0;
+                document.getElementById('math-required-count').textContent = `${gameState.mathCurrent} / ${gameState.mathRequired}`;
+                generateMathProblem();
+            }
+        }
+
+        // --- 4. Coordinate Hack ---
+        function startCoordinateHack() {
+            document.getElementById('coordinate-hack-container').classList.remove('hidden');
+            document.getElementById('coordinate-input').value = '';
+        }
+
+        function submitCoordinateHack() {
+            if (!gameState.mechanicActive) return;
+            
+            const code = document.getElementById('coordinate-input').value;
+            
+            // Код 4242 берется из истории (Часть 19)
+            if (code === '4242') {
+                finishMechanic('coordinate', true);
+            } else {
+                showAchievementNotification("Неверный код-пароль. Попробуйте снова!");
+            }
+        }
+
+        // --- 5. Sequence Hack (НОВАЯ МЕХАНИКА) ---
+        function startSequenceHack(difficulty) {
+            document.getElementById('sequence-hack-container').classList.remove('hidden');
+            gameState.sequenceRequired = difficulty;
+            gameState.sequenceCurrent = 0;
+            document.getElementById('sequence-required-count').textContent = `${gameState.sequenceCurrent} / ${gameState.sequenceRequired}`;
+            
+            // Добавляем слушателя клавиатуры
+            if (!gameState.sequenceListenerActive) {
+                // Используем capture: true, чтобы событие не попало в другие элементы (например, input)
+                document.addEventListener('keydown', handleSequenceInput, true); 
+                gameState.sequenceListenerActive = true;
+            }
+
+            // Привязываем кнопки к обработчику для мобильных
+            document.querySelectorAll('#sequence-buttons button').forEach(button => {
+                button.onclick = () => handleSequenceClick(button.dataset.key);
+            });
+
+            generateSequenceChallenge();
+        }
+
+        function generateSequenceChallenge() {
+            gameState.sequenceGoal = [];
+            gameState.sequencePlayer = [];
+            const length = gameState.sequenceCurrent + 3; // Последовательность становится длиннее
+            const keys = Object.keys(SEQUENCE_EMOJIS);
+
+            for (let i = 0; i < length; i++) {
+                gameState.sequenceGoal.push(keys[Math.floor(Math.random() * keys.length)]);
+            }
+
+            const display = document.getElementById('sequence-display');
+            display.textContent = 'Смотрите внимательно...';
+
+            // Мигание последовательности
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < gameState.sequenceGoal.length) {
+                    const key = gameState.sequenceGoal[i];
+                    display.textContent = SEQUENCE_EMOJIS[key];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    display.textContent = 'Ваш ход:';
+                }
+            }, 500);
+        }
+
+        function handleSequenceClick(key) {
+            // Эмуляция keydown для кнопок
+            handleSequenceInput({ key: key, target: document.body });
+        }
+        
+        function handleSequenceInput(event) {
+            if (!gameState.mechanicActive || document.getElementById('sequence-hack-container').classList.contains('hidden')) return;
+
+            const validKeys = Object.keys(SEQUENCE_EMOJIS);
+            if (!validKeys.includes(event.key)) return;
+
+            // Предотвращение прокрутки страницы при нажатии стрелок
+            event.preventDefault();
+
+            gameState.sequencePlayer.push(event.key);
+            const display = document.getElementById('sequence-display');
+            display.textContent = gameState.sequencePlayer.map(k => SEQUENCE_EMOJIS[k]).join(' ');
+
+            const currentLength = gameState.sequencePlayer.length;
+
+            if (gameState.sequencePlayer[currentLength - 1] !== gameState.sequenceGoal[currentLength - 1]) {
+                showAchievementNotification("Сбой Рефлекса! Повторите сначала.");
+                gameState.sequencePlayer = [];
+                setTimeout(() => display.textContent = 'Ваш ход:', 500);
+                return;
+            }
+
+            if (currentLength === gameState.sequenceGoal.length) {
+                gameState.sequenceCurrent++;
+                showAchievementNotification("Последовательность введена. Прогресс +1.");
+                document.getElementById('sequence-required-count').textContent = `${gameState.sequenceCurrent} / ${gameState.sequenceRequired}`;
+
+                if (gameState.sequenceCurrent >= gameState.sequenceRequired) {
+                    // Удаляем слушателя после завершения
+                    document.removeEventListener('keydown', handleSequenceInput, true);
+                    gameState.sequenceListenerActive = false;
+                    finishMechanic('sequence', true);
+                } else {
+                    setTimeout(generateSequenceChallenge, 1000); // Следующий раунд
+                }
+            }
+        }
+
+        // --- 6. Filter Hack (НОВАЯ МЕХАНИКА) ---
+        function startFilterHack(difficulty) {
+            document.getElementById('filter-hack-container').classList.remove('hidden');
+            gameState.filterRequired = difficulty;
+            gameState.filterCurrent = 0;
+            document.getElementById('filter-required-count').textContent = `${gameState.filterCurrent} / ${gameState.filterRequired}`;
+            generateFilterChallenge();
+        }
+
+        function generateFilterChallenge() {
+            const optionsContainer = document.getElementById('filter-options');
+            optionsContainer.innerHTML = '';
+            
+            // Выбираем доминантный и целевой эмодзи
+            const allEmojis = [...EMOJIS].sort(() => 0.5 - Math.random());
+            const dominantEmoji = allEmojis[0];
+            const targetEmoji = allEmojis[1]; 
+            gameState.filterTargetEmoji = targetEmoji;
+
+            let shuffledOptions = [];
+            // Добавляем доминантные эмодзи (8-12 раз)
+            const dominantCount = Math.floor(Math.random() * 5) + 8; // 8-12
+            for (let i = 0; i < dominantCount; i++) {
+                shuffledOptions.push(dominantEmoji);
+            }
+            // Добавляем целевые эмодзи (1-2 раза)
+            shuffledOptions.push(targetEmoji);
+            if (Math.random() > 0.5) shuffledOptions.push(targetEmoji); // Добавляем второй целевой элемент для усложнения
+
+            // Перемешиваем
+            shuffledOptions = shuffledOptions.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach(emoji => {
+                const button = document.createElement('button');
+                button.className = 'emoji-button';
+                button.textContent = emoji;
+                // Все кнопки, кроме целевой, ведут к проигрышу
+                if (emoji === targetEmoji) {
+                    // Целевая кнопка
+                    button.onclick = () => handleFilterClick(emoji);
+                } else {
+                    // "Шумные" кнопки
+                    button.onclick = () => handleFilterClick(dominantEmoji); // Имитация нажатия на доминантный (неверный) сигнал
+                }
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleFilterClick(emoji) {
+            if (!gameState.mechanicActive) return;
+            
+            if (emoji === gameState.filterTargetEmoji) {
+                gameState.filterCurrent++;
+                showAchievementNotification("Чистый сигнал изолирован. Прогресс +1.");
+                if (gameState.filterCurrent >= gameState.filterRequired) {
+                    finishMechanic('filter', true);
+                } else {
+                    document.getElementById('filter-required-count').textContent = `${gameState.filterCurrent} / ${gameState.filterRequired}`;
+                    generateFilterChallenge();
+                }
+            } else {
+                showAchievementNotification("Сигнал загрязнен. Сброс прогресса.");
+                gameState.filterCurrent = 0;
+                document.getElementById('filter-required-count').textContent = `${gameState.filterCurrent} / ${gameState.filterRequired}`;
+                generateFilterChallenge();
+            }
+        }
+
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        window.onload = async function () {
+            // Асинхронная загрузка данных сюжета
+            try {
+                await loadStoryData();
+            } catch (error) {
+                return; // Остановить инициализацию, если сюжет не загружен
+            }
+            
+            loadGameState();
+            displayStoryPart(gameState.currentPart);
+            updateUI();
+        };
+    </script>
+</body>
+</html>
