@@ -164,10 +164,6 @@
             </button>
         </div>
         
-        <div id="chiksometr-log-container" class="mt-4 p-3 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg hidden">
-            <p class="text-sm font-bold text-red-400">СЕКРЕТНЫЙ ПРОТОКОЛ ФОНДА (Чиксометр):</p>
-            <p id="chiksometr-log-text" class="text-xs italic text-red-200 mt-1"></p>
-        </div>
         <div id="story-view">
             <div id="story-text-content" class="text-gray-200"></div>
         </div>
@@ -200,22 +196,6 @@
                 <input type="number" id="coordinate-input" placeholder="Код-пароль" class="w-full p-3 bg-gray-700 text-white rounded-lg border-none focus:ring-2 focus:ring-yellow-500">
                 <button class="action-button w-full mt-3 bg-yellow-600 hover:bg-yellow-700" onclick="submitCoordinateHack()">Подтвердить</button>
             </div>
-
-            <div id="sequence-hack-container" class="hidden">
-                <p class="mb-3 text-sm">Повторите последовательность стрелок (используйте клавиатуру или кнопки). Цель: <span id="sequence-required-count" class="font-bold text-red-400"></span></p>
-                <div id="sequence-display" class="text-4xl my-4 text-yellow-400 font-extrabold flex justify-center space-x-3 h-12 items-center">?</div>
-                <div id="sequence-buttons" class="grid grid-cols-4 gap-2">
-                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowUp">⬆️</button>
-                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowDown">⬇️</button>
-                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowLeft">⬅️</button>
-                    <button class="action-button bg-gray-700 text-white p-3 rounded-md" data-key="ArrowRight">➡️</button>
-                </div>
-            </div>
-
-            <div id="filter-hack-container" class="hidden">
-                <p class="mb-3 text-sm">Отфильтруйте "Чистый Сигнал" (тот, что появляется реже всего). Цель: <span id="filter-required-count" class="font-bold text-red-400"></span></p>
-                <div id="filter-options" class="grid grid-cols-3 gap-3"></div>
-            </div>
         </div>
 
         <button id="next-button" class="action-button w-full mt-5 bg-blue-600 text-white hover:bg-blue-700" onclick="handleNextClick()">Далее</button>
@@ -236,7 +216,6 @@
     <script>
         // === КОНФИГУРАЦИЯ ИСТОРИИ И ДОСТИЖЕНИЙ ===
         const EMOJIS = ['🚀', '💻', '🔮', '🦠', '💥', '🔑', '⚡', '🤖', '🛰️', '🔥', '⚙️', '🧊'];
-        const SEQUENCE_EMOJIS = { 'ArrowUp': '⬆️', 'ArrowDown': '⬇️', 'ArrowLeft': '⬅️', 'ArrowRight': '➡️' };
         let storyData = []; // Глобальная переменная для хранения сюжета
 
         const ACHIEVEMENTS = {
@@ -250,6 +229,7 @@
         // --- ФУНКЦИЯ ЗАГРУЗКИ СЮЖЕТА ИЗ JSON ---
         async function loadStoryData() {
             try {
+                // Замените 'story_data.json' на путь к вашему файлу
                 const response = await fetch('story_data.json');
                 if (!response.ok) {
                     throw new Error(`Ошибка загрузки сюжета: ${response.statusText}`);
@@ -274,28 +254,16 @@
             currentAchievement: 0,
             achievements: {},
             mechanicActive: false,
-            // Переменные для механики Loading Pause
-            loadingTimer: null,
-            loadingDuration: 0,
-            loadingStartTime: 0,
-            // Переменные для механики Emoji Hack
+            // Переменные для механики
             emojiTarget: '',
             emojiRequired: 0,
             emojiCurrent: 0,
-            // Переменные для механики Math Hack
             mathAnswer: 0,
             mathRequired: 0,
             mathCurrent: 0,
-            // Переменные для механики Sequence Hack (НОВЫЕ)
-            sequenceGoal: [],
-            sequencePlayer: [],
-            sequenceRequired: 0,
-            sequenceCurrent: 0,
-            sequenceListenerActive: false,
-            // Переменные для механики Filter Hack (НОВЫЕ)
-            filterTargetEmoji: '',
-            filterRequired: 0,
-            filterCurrent: 0,
+            loadingTimer: null,
+            loadingDuration: 0,
+            loadingStartTime: 0,
         };
 
         // === СЛУЖЕБНЫЕ ФУНКЦИИ ===
@@ -331,28 +299,16 @@
                     currentAchievement: 0,
                     achievements: {},
                     mechanicActive: false,
-                    loadingTimer: null,
-                    loadingDuration: 0,
-                    loadingStartTime: 0,
                     emojiTarget: '',
                     emojiRequired: 0,
                     emojiCurrent: 0,
                     mathAnswer: 0,
                     mathRequired: 0,
                     mathCurrent: 0,
-                    sequenceGoal: [],
-                    sequencePlayer: [],
-                    sequenceRequired: 0,
-                    sequenceCurrent: 0,
-                    sequenceListenerActive: false,
-                    filterTargetEmoji: '',
-                    filterRequired: 0,
-                    filterCurrent: 0,
+                    loadingTimer: null,
+                    loadingDuration: 0,
+                    loadingStartTime: 0,
                 };
-                // Удаляем слушателя клавиатуры при сбросе
-                document.removeEventListener('keydown', handleSequenceInput);
-                gameState.sequenceListenerActive = false;
-
                 displayStoryPart(gameState.currentPart);
                 updateUI();
                 showAchievementNotification("Протокол сброшен. Начните заново.");
@@ -365,16 +321,9 @@
             
             const currentPartData = storyData.find(p => p.part === gameState.currentPart);
 
-            if (!currentPartData) {
-                document.getElementById('next-button').textContent = 'Конец Протокола';
-                document.getElementById('next-button').disabled = true;
-                return;
-            }
-
             if (gameState.mechanicActive) {
                 document.getElementById('next-button').textContent = 'Взлом Активен...';
                 document.getElementById('next-button').disabled = true;
-                document.getElementById('game-mechanic').classList.remove('hidden');
             } else if (currentPartData.action === 'hack') {
                 document.getElementById('next-button').textContent = 'Начать Взлом';
                 document.getElementById('next-button').disabled = false;
@@ -404,19 +353,6 @@
                 <p>${currentPartData.text}</p>
             `;
 
-            // --- Логика Чиксометра ---
-            const logContainer = document.getElementById('chiksometr-log-container');
-            const logText = document.getElementById('chiksometr-log-text');
-            if (currentPartData.agent_log) {
-                logText.innerHTML = currentPartData.agent_log;
-                logContainer.classList.remove('hidden');
-            } else {
-                logContainer.classList.add('hidden');
-                logText.innerHTML = '';
-            }
-            // --- Конец Логики Чиксометра ---
-
-
             // Установка состояния достижения
             if (currentPartData.achievement) {
                 unlockAchievement(currentPartData.achievement);
@@ -427,9 +363,6 @@
             document.getElementById('emoji-hack-container').classList.add('hidden');
             document.getElementById('math-hack-container').classList.add('hidden');
             document.getElementById('coordinate-hack-container').classList.add('hidden');
-            document.getElementById('sequence-hack-container').classList.add('hidden');
-            document.getElementById('filter-hack-container').classList.add('hidden');
-
 
             // Подготовка к механике, если она есть
             if (currentPartData.action === 'hack') {
@@ -455,12 +388,7 @@
                 displayStoryPart(gameState.currentPart + 1);
             } else if (currentPartData.action === 'finish') {
                 updateUI();
-                // Финальный твист от Чиксометра
-                if (currentPartData.agent_log) {
-                    showAchievementNotification(currentPartData.agent_log.replace('Чиксометр: ', 'ФИНАЛЬНЫЙ ПРОТОКОЛ: '));
-                } else {
-                    showAchievementNotification("История Протокола Т-16 завершена!");
-                }
+                showAchievementNotification("История Протокола Т-16 завершена!");
             }
         }
 
@@ -495,11 +423,6 @@
         function showAchievementNotification(message) {
             const notification = document.getElementById('achievement-notification');
             notification.textContent = message;
-            // Сброс анимации
-            notification.style.animation = 'none';
-            notification.offsetHeight; /* trigger reflow */
-            notification.style.animation = null; 
-            
             notification.style.display = 'block';
             setTimeout(() => {
                 notification.style.display = 'none';
@@ -525,12 +448,6 @@
             } else if (mechanicType === 'coordinate') {
                 document.getElementById('mechanic-title').textContent = 'Координатор: Корректировка Частоты';
                 startCoordinateHack();
-            } else if (mechanicType === 'sequence') {
-                document.getElementById('mechanic-title').textContent = 'Сверхскоростной Протокол: Моторный Рефлекс';
-                startSequenceHack(difficulty || 3);
-            } else if (mechanicType === 'filter') {
-                document.getElementById('mechanic-title').textContent = 'Психологическая Частота: Изоляция Сигнала';
-                startFilterHack(difficulty || 3);
             }
             updateUI();
         }
@@ -549,14 +466,17 @@
 
             // Скрытие контейнера механики
             document.getElementById('game-mechanic').classList.add('hidden');
-            document.getElementById('sequence-hack-container').classList.add('hidden'); // Скрыть после завершения
 
             if (success) {
                 showAchievementNotification("Взлом УСПЕШЕН. Переход к следующему Протоколу.");
                 displayStoryPart(gameState.currentPart + 1);
             } else {
                 showAchievementNotification("Сбой операции. Повторите попытку.");
-                // Логика сброса уже внутри конкретной механики
+                if (mechanicType === 'math') {
+                    // Сброс прогресса в раунде
+                    gameState.mathCurrent = 0;
+                    document.getElementById('math-required-count').textContent = `${gameState.mathCurrent} / ${gameState.mathRequired}`;
+                }
                 updateUI();
             }
         }
@@ -658,13 +578,13 @@
                 a = Math.floor(Math.random() * 20) + 10;
                 b = Math.floor(Math.random() * 9) + 2;
                 operator = Math.random() < 0.5 ? '*' : '+';
-                if (operator === '*' && b === 1) b = 2; 
+                if (operator === '*' && b === 1) b = 2; // Умножение на 1 слишком просто
                 if (operator === '+' && a > 30) a = 30;
             } else if (difficulty === 4) {
                 a = Math.floor(Math.random() * 50) + 5;
                 b = Math.floor(Math.random() * 20) + 5;
                 operator = Math.random() < 0.6 ? '+' : '-';
-                if (operator === '-' && a < b) [a, b] = [b, a]; 
+                if (operator === '-' && a < b) [a, b] = [b, a]; // Всегда положительный результат
             } else {
                 a = Math.floor(Math.random() * 10) + 1;
                 b = Math.floor(Math.random() * 10) + 1;
@@ -685,7 +605,7 @@
                     correctAnswer = a * b;
                     break;
                 default:
-                    correctAnswer = a + b; 
+                    correctAnswer = a + b; // Fallback
             }
 
             document.getElementById('math-problem').textContent = problem + ' = ?';
@@ -735,167 +655,6 @@
                 showAchievementNotification("Неверный код-пароль. Попробуйте снова!");
             }
         }
-
-        // --- 5. Sequence Hack (НОВАЯ МЕХАНИКА) ---
-        function startSequenceHack(difficulty) {
-            document.getElementById('sequence-hack-container').classList.remove('hidden');
-            gameState.sequenceRequired = difficulty;
-            gameState.sequenceCurrent = 0;
-            document.getElementById('sequence-required-count').textContent = `${gameState.sequenceCurrent} / ${gameState.sequenceRequired}`;
-            
-            // Добавляем слушателя клавиатуры
-            if (!gameState.sequenceListenerActive) {
-                // Используем capture: true, чтобы событие не попало в другие элементы (например, input)
-                document.addEventListener('keydown', handleSequenceInput, true); 
-                gameState.sequenceListenerActive = true;
-            }
-
-            // Привязываем кнопки к обработчику для мобильных
-            document.querySelectorAll('#sequence-buttons button').forEach(button => {
-                button.onclick = () => handleSequenceClick(button.dataset.key);
-            });
-
-            generateSequenceChallenge();
-        }
-
-        function generateSequenceChallenge() {
-            gameState.sequenceGoal = [];
-            gameState.sequencePlayer = [];
-            const length = gameState.sequenceCurrent + 3; // Последовательность становится длиннее
-            const keys = Object.keys(SEQUENCE_EMOJIS);
-
-            for (let i = 0; i < length; i++) {
-                gameState.sequenceGoal.push(keys[Math.floor(Math.random() * keys.length)]);
-            }
-
-            const display = document.getElementById('sequence-display');
-            display.textContent = 'Смотрите внимательно...';
-
-            // Мигание последовательности
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < gameState.sequenceGoal.length) {
-                    const key = gameState.sequenceGoal[i];
-                    display.textContent = SEQUENCE_EMOJIS[key];
-                    i++;
-                } else {
-                    clearInterval(interval);
-                    display.textContent = 'Ваш ход:';
-                }
-            }, 500);
-        }
-
-        function handleSequenceClick(key) {
-            // Эмуляция keydown для кнопок
-            handleSequenceInput({ key: key, target: document.body });
-        }
-        
-        function handleSequenceInput(event) {
-            if (!gameState.mechanicActive || document.getElementById('sequence-hack-container').classList.contains('hidden')) return;
-
-            const validKeys = Object.keys(SEQUENCE_EMOJIS);
-            if (!validKeys.includes(event.key)) return;
-
-            // Предотвращение прокрутки страницы при нажатии стрелок
-            event.preventDefault();
-
-            gameState.sequencePlayer.push(event.key);
-            const display = document.getElementById('sequence-display');
-            display.textContent = gameState.sequencePlayer.map(k => SEQUENCE_EMOJIS[k]).join(' ');
-
-            const currentLength = gameState.sequencePlayer.length;
-
-            if (gameState.sequencePlayer[currentLength - 1] !== gameState.sequenceGoal[currentLength - 1]) {
-                showAchievementNotification("Сбой Рефлекса! Повторите сначала.");
-                gameState.sequencePlayer = [];
-                setTimeout(() => display.textContent = 'Ваш ход:', 500);
-                return;
-            }
-
-            if (currentLength === gameState.sequenceGoal.length) {
-                gameState.sequenceCurrent++;
-                showAchievementNotification("Последовательность введена. Прогресс +1.");
-                document.getElementById('sequence-required-count').textContent = `${gameState.sequenceCurrent} / ${gameState.sequenceRequired}`;
-
-                if (gameState.sequenceCurrent >= gameState.sequenceRequired) {
-                    // Удаляем слушателя после завершения
-                    document.removeEventListener('keydown', handleSequenceInput, true);
-                    gameState.sequenceListenerActive = false;
-                    finishMechanic('sequence', true);
-                } else {
-                    setTimeout(generateSequenceChallenge, 1000); // Следующий раунд
-                }
-            }
-        }
-
-        // --- 6. Filter Hack (НОВАЯ МЕХАНИКА) ---
-        function startFilterHack(difficulty) {
-            document.getElementById('filter-hack-container').classList.remove('hidden');
-            gameState.filterRequired = difficulty;
-            gameState.filterCurrent = 0;
-            document.getElementById('filter-required-count').textContent = `${gameState.filterCurrent} / ${gameState.filterRequired}`;
-            generateFilterChallenge();
-        }
-
-        function generateFilterChallenge() {
-            const optionsContainer = document.getElementById('filter-options');
-            optionsContainer.innerHTML = '';
-            
-            // Выбираем доминантный и целевой эмодзи
-            const allEmojis = [...EMOJIS].sort(() => 0.5 - Math.random());
-            const dominantEmoji = allEmojis[0];
-            const targetEmoji = allEmojis[1]; 
-            gameState.filterTargetEmoji = targetEmoji;
-
-            let shuffledOptions = [];
-            // Добавляем доминантные эмодзи (8-12 раз)
-            const dominantCount = Math.floor(Math.random() * 5) + 8; // 8-12
-            for (let i = 0; i < dominantCount; i++) {
-                shuffledOptions.push(dominantEmoji);
-            }
-            // Добавляем целевые эмодзи (1-2 раза)
-            shuffledOptions.push(targetEmoji);
-            if (Math.random() > 0.5) shuffledOptions.push(targetEmoji); // Добавляем второй целевой элемент для усложнения
-
-            // Перемешиваем
-            shuffledOptions = shuffledOptions.sort(() => 0.5 - Math.random());
-
-            shuffledOptions.forEach(emoji => {
-                const button = document.createElement('button');
-                button.className = 'emoji-button';
-                button.textContent = emoji;
-                // Все кнопки, кроме целевой, ведут к проигрышу
-                if (emoji === targetEmoji) {
-                    // Целевая кнопка
-                    button.onclick = () => handleFilterClick(emoji);
-                } else {
-                    // "Шумные" кнопки
-                    button.onclick = () => handleFilterClick(dominantEmoji); // Имитация нажатия на доминантный (неверный) сигнал
-                }
-                optionsContainer.appendChild(button);
-            });
-        }
-
-        function handleFilterClick(emoji) {
-            if (!gameState.mechanicActive) return;
-            
-            if (emoji === gameState.filterTargetEmoji) {
-                gameState.filterCurrent++;
-                showAchievementNotification("Чистый сигнал изолирован. Прогресс +1.");
-                if (gameState.filterCurrent >= gameState.filterRequired) {
-                    finishMechanic('filter', true);
-                } else {
-                    document.getElementById('filter-required-count').textContent = `${gameState.filterCurrent} / ${gameState.filterRequired}`;
-                    generateFilterChallenge();
-                }
-            } else {
-                showAchievementNotification("Сигнал загрязнен. Сброс прогресса.");
-                gameState.filterCurrent = 0;
-                document.getElementById('filter-required-count').textContent = `${gameState.filterCurrent} / ${gameState.filterRequired}`;
-                generateFilterChallenge();
-            }
-        }
-
 
         // === ИНИЦИАЛИЗАЦИЯ ===
         window.onload = async function () {
