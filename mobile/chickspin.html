@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Дает всегда! V27</title>
+    <title>ChickinSpin - Дает всегда! V28</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -333,8 +333,7 @@
             ANY_CHICK: 2        
         };
         
-        // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: ГЛОБАЛЬНАЯ ПЕРЕМЕННАЯ ДЛЯ ХРАНЕНИЯ ВЫИГРЫШНОЙ КОМБИНАЦИИ ---
-        // Инициализируем комбинацией, чтобы при первом запуске барабан не был пустым.
+        // --- ГЛОБАЛЬНАЯ ПЕРЕМЕННАЯ ДЛЯ ХРАНЕНИЯ ВЫИГРЫШНОЙ КОМБИНАЦИИ ---
         let lastFinalSymbols = [highFrequencySymbols[0], highFrequencySymbols[1], highFrequencySymbols[2]]; 
         
         // --- Аудио Инициализация ---
@@ -444,7 +443,7 @@
         
         /**
          * Пересобирает барабаны с новыми размерами и устанавливает их в финальную позицию.
-         * Используется для инициализации и стабилизации после ресайза (мобильная клавиатура/поворот экрана).
+         * Используется для инициализации и стабилизации после ресайза (если нужно).
          * !!! Использует lastFinalSymbols для сохранения визуального результата !!!
          */
         function rebuildReelsAndSetPosition() {
@@ -472,7 +471,7 @@
                     
                     let symbolToUse;
                     if (j === totalSpinSymbols - 1) {
-                         // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем сохраненный символ! ---
+                         // Используем сохраненный символ
                          symbolToUse = lastFinalSymbols[i] || highFrequencySymbols[0];
                     } else {
                         // Остальные символы - случайные
@@ -495,7 +494,6 @@
         
         /**
          * Вращает один барабан.
-         * Использует агрессивный сброс и пересборку DOM для максимальной стабильности.
          */
         function spinReel(reelIndex, finalSymbol) {
             const inner = document.getElementById(`reel-inner-${reelIndex}`);
@@ -590,7 +588,18 @@
             
             stopSpinSound();
             
-            // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Сохраняем выигрышную комбинацию ---
+            // --- НОВЫЙ ФИКС V28: Принудительная немедленная стабилизация позиции ---
+            // ЭТО ПРЕДОТВРАЩАЕТ НЕПРАВИЛЬНУЮ СМЕНУ СИМВОЛОВ СРАЗУ ПОСЛЕ ОСТАНОВКИ.
+            const symbolHeight = getSymbolHeight();
+            const targetPosition = - ((totalSpinSymbols - 1) * symbolHeight);
+
+            document.querySelectorAll('.reel-inner').forEach(inner => {
+                // 1. Гарантируем, что нет transition (т.к. он был снят в spinReel, но это для надежности)
+                inner.style.transition = 'none';
+                // 2. Устанавливаем точную выигрышную позицию
+                inner.style.transform = `translateY(${targetPosition}px)`;
+            });
+
             lastFinalSymbols = resolvedSymbols;
 
             if (!checkWin(resolvedSymbols, isBonusGame, currentBet)) {
@@ -739,18 +748,7 @@
                 updateButtonsState(false); 
             });
             
-            // --- Наблюдатель за ресайзом для мобильной стабилизации ---
-            const resizeObserver = new ResizeObserver(entries => {
-                for (let entry of entries) {
-                    if (entry.target === reelContainer) {
-                        // Пересобираем барабаны только если не идет анимация
-                        if (!isSpinning) {
-                             rebuildReelsAndSetPosition();
-                        }
-                    }
-                }
-            });
-            resizeObserver.observe(reelContainer);
+            // --- УДАЛЕН ResizeObserver для предотвращения пост-анимационных сбоев (V28) ---
         }
 
 
