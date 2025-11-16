@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Идеальное Мобильное Центрирование V18</title>
+    <title>ChickinSpin</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -108,7 +108,7 @@
             width: auto; 
             gap: 15px; 
             padding: 15px;
-            margin: 0 var(--content-padding); 
+            margin: 0 var(--content-padding) 10px var(--content-padding); 
         }
 
         #spinButton { 
@@ -143,50 +143,39 @@
         .bet-control input { width: 80px; padding: 8px; text-align: center; background-color: var(--reel-bg); border: 2px solid var(--primary-gold); border-radius: 8px; color: #4CAF50; font-size: 1.2em; font-weight: 700; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); -moz-appearance: textfield; }
         .bet-control input::-webkit-outer-spin-button, .bet-control input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* --- Новые кнопки --- */
+        /* --- Кнопка "Поделиться" (Новая мелкая с текстом) --- */
         .additional-controls {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end; 
             align-items: center;
             width: auto;
             gap: 10px;
             padding: 0 0 15px 0;
             margin: 0 var(--content-padding);
         }
-        .full-bet-button {
-            flex-grow: 1;
-            padding: 10px 15px;
-            font-size: 1.1em;
-            font-weight: 700;
-            background: linear-gradient(135deg, #00BFFF 0%, #1E90FF 100%);
-            color: white;
-            border: 2px solid #0056b3;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #0056b3;
-            transition: all 0.1s;
-        }
+        
         .share-button {
             flex-shrink: 0;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            padding: 8px 15px;
+            height: auto;
+            width: auto;
+            border-radius: 8px; 
             background: #4CAF50;
             color: white;
-            font-size: 1.5em;
-            line-height: 50px;
+            font-size: 1em; 
+            line-height: 1.2;
             text-align: center;
             border: 2px solid #2e8b57;
             box-shadow: 0 4px 0 #2e8b57;
             cursor: pointer;
             transition: all 0.1s;
-            font-family: Arial, sans-serif;
-            font-weight: 900;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
         }
 
-        .full-bet-button:hover, .share-button:hover {
+        .share-button:hover {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 var(--spin-shadow);
+            box-shadow: 0 2px 0 #2e8b57;
         }
         
         /* --- Стили оверлея --- */
@@ -290,10 +279,9 @@
         </div>
 
         <div class="additional-controls">
-            <button id="spinAllButton" class="full-bet-button">ПОСТАВИТЬ ВСЁ</button>
-            <div id="shareButton" class="share-button">
-                &#9992;
-            </div>
+            <button id="shareButton" class="share-button">
+                Поделиться
+            </button>
         </div>
     </div>
 
@@ -312,7 +300,6 @@
         const SYMBOL_CHICK_PNG = 'CHICK_PNG'; 
         const SYMBOL_CHICK_JPG = 'CHICK_JPG'; 
         const symbols = ['👑', '💎', '💰', '⭐', SYMBOL_CHICK_PNG, SYMBOL_CHICK_JPG, '🥚', '🍒'];
-        // Символы с высокой частотой: 👑, 💎, 💰, ⭐
         const highFrequencySymbols = symbols.slice(0, 4);
 
         const numReels = 3;
@@ -320,8 +307,7 @@
         
         const reelContainer = document.querySelector('.reels-container');
         const spinButton = document.getElementById('spinButton');
-        const spinAllButton = document.getElementById('spinAllButton'); // Новая кнопка
-        const shareButton = document.getElementById('shareButton');     // Новая кнопка
+        const shareButton = document.getElementById('shareButton');     
         const balanceDisplay = document.getElementById('balanceDisplay');
         const resultDisplay = document.getElementById('resultDisplay');
         const betInput = document.getElementById('betInput');
@@ -337,15 +323,13 @@
         let isSpinning = false;
         let bonusChance = 1;
         
-        // Минимальный баланс для защиты от "под ноль"
         const MIN_BALANCE_LIMIT = 5; 
 
-        // --- МНОЖИТЕЛИ ВЫИГРЫША (СКОРРЕКТИРОВАНЫ) ---
         const PAYOUTS = {
-            TRIPLE_MATCH: 150,  // Увеличен с 100
+            TRIPLE_MATCH: 150,  
             CHICK_BONUS: 30,    
-            DOUBLE_MATCH: 3,    // Уменьшен с 5
-            ANY_CHICK: 2        // Уменьшен с 3
+            DOUBLE_MATCH: 3,    
+            ANY_CHICK: 2        
         };
         
         // --- Аудио Инициализация ---
@@ -378,12 +362,16 @@
         }
         
         function showWinOverlay(title, amount) {
+            // Сброс размера шрифта перед показом, чтобы не мешало предыдущее сообщение
+            winTitle.style.fontSize = '3.5em'; 
+            winAmountDisplay.className = ''; 
+            
             winTitle.textContent = title;
             winAmountDisplay.textContent = amount;
             winOverlay.classList.add('active');
             spinButton.disabled = true;
-            spinAllButton.disabled = true;
             betInput.disabled = true;
+            shareButton.disabled = true;
             winMusic.play().catch(e => console.log('Ошибка воспроизведения музыки: ', e));
         }
 
@@ -397,9 +385,10 @@
         function updateButtonsState(spinning) {
             isSpinning = spinning;
             spinButton.disabled = spinning || balance < 1;
-            spinAllButton.disabled = spinning || balance < 1;
             betInput.disabled = spinning || balance < 1;
-            if (balance <= MIN_BALANCE_LIMIT) {
+            shareButton.disabled = spinning;
+            
+            if (balance <= MIN_BALANCE_LIMIT && balance > 0) {
                  resultDisplay.textContent = 'БАЛАНС НА ИСХОДЕ!';
                  resultDisplay.className = 'lose';
                  betInput.max = balance;
@@ -407,8 +396,8 @@
                  betInput.max = 100;
             }
             if (balance <= 0) {
+                // Это должно быть обработано функцией "Спасение от нуля"
                 spinButton.disabled = true;
-                spinAllButton.disabled = true;
                 betInput.disabled = true;
                 resultDisplay.textContent = 'ИГРА ОКОНЧЕНА! Обновите страницу.';
                 resultDisplay.className = 'lose';
@@ -455,7 +444,6 @@
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
                     
-                    // Увеличиваем шанс выпадения highFrequencySymbols
                     const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
                     const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
 
@@ -510,8 +498,8 @@
             });
         }
         
-        async function spinSlots(customBet = null, forceAll = false) {
-            let currentBet = customBet !== null ? customBet : parseInt(betInput.value);
+        async function spinSlots() {
+            let currentBet = parseInt(betInput.value);
 
             if (isNaN(currentBet) || currentBet <= 0 || balance < currentBet) {
                 resultDisplay.textContent = balance < currentBet ? 'НЕДОСТАТОЧНО СРЕДСТВ!' : 'Неверная ставка!';
@@ -520,15 +508,6 @@
             }
             
             updateButtonsState(true);
-            
-            // Если ставка "Поставить всё", защищаем MIN_BALANCE_LIMIT
-            if (forceAll) {
-                if (balance <= MIN_BALANCE_LIMIT) {
-                     currentBet = balance; // Ставим все, что есть
-                } else {
-                     currentBet = balance - MIN_BALANCE_LIMIT; // Ставим все, кроме MIN_BALANCE_LIMIT
-                }
-            }
             
             balance -= currentBet;
             balanceDisplay.textContent = balance;
@@ -540,29 +519,17 @@
             let isBonusGame = (Math.random() * 100 < bonusChance);
             let finalSymbols = [];
 
-            if (forceAll) {
-                // Логика "Поставить всё": 70% проигрыш, 30% крупный выигрыш
-                if (Math.random() < 0.70) { 
-                    // 70% проигрыш (разные символы с низкой стоимостью)
-                    finalSymbols = [highFrequencySymbols[0], highFrequencySymbols[1], highFrequencySymbols[2]];
+            // Стандартная логика:
+            for (let i = 0; i < numReels; i++) {
+                if (Math.random() < 0.05) { 
+                    finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
                 } else {
-                    // 30% крупный выигрыш (Джекпот или почти Джекпот)
-                    finalSymbols = [symbols[0], symbols[0], symbols[0]]; // Три короны - Джекпот
+                    finalSymbols.push(highFrequencySymbols[Math.floor(Math.random() * highFrequencySymbols.length)]); 
                 }
-            } else {
-                // Стандартная логика:
-                for (let i = 0; i < numReels; i++) {
-                    if (Math.random() < 0.05) { // Шанс выпадения курицы (редкий, 5%)
-                        finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
-                    } else {
-                        // Высокий шанс выпадения символов с низкой стоимостью
-                        finalSymbols.push(highFrequencySymbols[Math.floor(Math.random() * highFrequencySymbols.length)]); 
-                    }
-                }
-            
-                if (isBonusGame) {
-                     finalSymbols[2] = SYMBOL_CHICK_PNG;
-                }
+            }
+        
+            if (isBonusGame) {
+                 finalSymbols[2] = SYMBOL_CHICK_PNG;
             }
 
 
@@ -612,6 +579,28 @@
             }
             
             balance += winAmount;
+            
+            // --- ЛОГИКА: СПАСЕНИЕ ОТ НУЛЯ ---
+            if (balance <= 0) {
+                balance = 15; // Даем 15 рублей
+                saveGame(); 
+                
+                // Выводим сообщение о спасении
+                showWinOverlay("ЧИКИН ДАЕТ НОВЫЙ ШАНС", 15);
+                winTitle.style.fontSize = '2.5em'; 
+                winTitle.textContent = "Чикин дает новый шанс, ведь этот ты проиграл"; 
+                winAmountDisplay.textContent = "15";
+                winAmountDisplay.className = 'win'; 
+                balanceDisplay.textContent = balance;
+                
+                // Сброс бонуса
+                bonusChance = 1;
+                bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
+
+                return true; 
+            }
+            // --- КОНЕЦ ЛОГИКИ СПАСЕНИЯ ---
+
             balanceDisplay.textContent = balance;
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
@@ -636,29 +625,22 @@
             return false;
         }
 
-        function spinAll() {
-            if (balance <= MIN_BALANCE_LIMIT) {
-                resultDisplay.textContent = 'БАЛАНС НА ИСХОДЕ! Сделайте минимальную ставку.';
-                resultDisplay.className = 'lose';
-                return;
-            }
-            spinSlots(null, true);
-        }
-
         function shareStats() {
             const message = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? @CHICKINSPIN`;
-            const url = window.location.href; 
+            // Используем константный URL
+            const url = "https://zakatcloud.github.io/mobile/reserve"; 
             
             if (navigator.share) {
                 navigator.share({
                     title: 'ChickinSpin: Мой выигрыш!',
                     text: message,
-                    url: url,
+                    url: url, 
                 })
                 .catch(error => console.log('Ошибка поделиться', error));
             } else {
                 // Fallback для устройств без Web Share API
-                const fallbackMessage = message + `\n${url}`;
+                // В fallback оставляем URL, чтобы пользователю было что отправить
+                const fallbackMessage = message + `\n${url}`; 
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(fallbackMessage).then(() => {
                         alert('Статистика скопирована в буфер обмена! Вы можете отправить ее в любой мессенджер.');
@@ -700,16 +682,14 @@
                 createReels();
             }, 50); 
             
-            // Подключение новых функций
             spinButton.addEventListener('click', () => spinSlots());
-            spinAllButton.addEventListener('click', spinAll);
             shareButton.addEventListener('click', shareStats);
 
             betInput.addEventListener('change', () => {
                 const val = parseInt(betInput.value);
                 if (val > balance) betInput.value = balance; 
                 if (val < 1 || isNaN(val)) betInput.value = 1;
-                updateButtonsState(false); // Обновляем состояние, чтобы учесть новый max
+                updateButtonsState(false); 
             });
             
             const resizeObserver = new ResizeObserver(entries => {
