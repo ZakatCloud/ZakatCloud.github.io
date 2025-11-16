@@ -629,7 +629,7 @@
             const botLink = 'https://t.me/CHICKINSPINBOT/play'; // Фиксированная ссылка для отправки
 
             // Полный текст, который будет скопирован или использован в Web Share
-            const fullMessage = `ChickinSpin: Мой выигрыш!\n${messageText}\n>>> ${botLink} <<<`;
+            const fullMessage = `${messageText}\n>>> ${botLink}`;
 
             if (navigator.share) {
                 // Web Share API (лучший способ, может отправить текст и ссылку отдельно)
