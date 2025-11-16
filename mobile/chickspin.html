@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Дает всегда! V23</title>
+    <title>ChickinSpin - Дает всегда! V24</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -303,7 +303,7 @@
         const highFrequencySymbols = symbols.slice(0, 4);
 
         const numReels = 3;
-        const totalSpinSymbols = 30;
+        const totalSpinSymbols = 30; // Всего символов на барабане
         
         const reelContainer = document.querySelector('.reels-container');
         const spinButton = document.getElementById('spinButton');
@@ -423,6 +423,10 @@
             localStorage.setItem('slotBonusChance', bonusChance);
         }
 
+        /**
+         * Возвращает высоту одного символа, равную высоте контейнера.
+         * Барабан спроектирован так, что в контейнере виден один символ.
+         */
         function getSymbolHeight() {
              return reelContainer.clientHeight; 
         }
@@ -458,29 +462,35 @@
             const inner = document.getElementById(`reel-inner-${reelIndex}`);
             const symbolHeight = getSymbolHeight();
             
+            // Сбрасываем переход, чтобы начать новое вращение без остаточных анимаций
             inner.style.transition = 'none';
+            // Сбрасываем позицию для начала вращения
             inner.style.transform = 'translateY(0)';
             inner.classList.add('spinning');
             
             return new Promise(resolve => {
                 
+                // Пересобираем символы для спина
                 for(let i = 0; i < inner.children.length; i++) {
                     const symbolDiv = inner.children[i];
                     symbolDiv.innerHTML = '';
                     symbolDiv.style.height = `${symbolHeight}px`;
                     
-                    const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
+                    // ИСПРАВЛЕНИЕ 1: Снижена вероятность выбора из маленького набора (60% вместо 80%)
+                    const symbolSet = Math.random() < 0.6 ? highFrequencySymbols : symbols;
                     const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
                     
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
                     inner.appendChild(symbolDiv);
                 }
                 
+                // Устанавливаем финальный символ на последнее место
                 const finalSymbolDiv = inner.children[totalSpinSymbols - 1];
                 finalSymbolDiv.innerHTML = '';
                 finalSymbolDiv.style.height = `${symbolHeight}px`;
                 finalSymbolDiv.appendChild(createSymbolContent(finalSymbol));
                 
+                // Целевая позиция: предпоследний символ (totalSpinSymbols - 1) должен быть вверху (сдвиг вниз)
                 const targetPosition = - ((totalSpinSymbols - 1) * symbolHeight); 
 
                 setTimeout(() => {
@@ -490,7 +500,7 @@
                     inner.style.transform = `translateY(${targetPosition}px)`;
                     
                     setTimeout(() => {
-                        // ИСПРАВЛЕНО: Убеждаемся, что переход (transition) полностью удален после окончания анимации.
+                        // ИСПРАВЛЕНИЕ: Убеждаемся, что переход (transition) полностью удален после окончания анимации.
                         inner.style.transition = 'none';
                         resolve(finalSymbol);
                     }, animationTime); 
@@ -585,7 +595,6 @@
                 balance = 15; // Даем 15 рублей
                 saveGame(); 
                 
-                // Выводим сообщение о спасении
                 showWinOverlay("ЧИКИН ДАЕТ НОВЫЙ ШАНС", 15);
                 winTitle.style.fontSize = '2.5em'; 
                 winTitle.textContent = "Чикин дает новый шанс, ведь этот ты проиграл"; 
@@ -593,7 +602,6 @@
                 winAmountDisplay.className = 'win'; 
                 balanceDisplay.textContent = balance;
                 
-                // Сброс бонуса
                 bonusChance = 1;
                 bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
 
@@ -605,12 +613,12 @@
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
             
-            // Логика шанса бонуса
+            // ИСПРАВЛЕНИЕ 2: Снижение скорости роста бонусного шанса
             if (playOverlay) {
                 if (isBonus) bonusChance = 1;
-                else bonusChance += 7;
+                else bonusChance += 5; // Снижено с 7 до 5
             } else if (winAmount > 0) {
-                 bonusChance += 1;
+                 bonusChance += 0.5; // Снижено с 1 до 0.5
             } else {
                 bonusChance = Math.max(1, bonusChance - 0.5);
             }
@@ -626,22 +634,18 @@
         }
 
         function shareStats() {
-            // ФОРМАТИРОВАНИЕ ДЛЯ ПОДЕЛИТЬСЯ (использует баланс из текущего состояния)
             const messageText = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? Заходи!`;
-            const botLink = 'https://t.me/CHICKINSPINBOT/play'; // Фиксированная ссылка для отправки
+            const botLink = 't.me/CHICKINSPINBOT/play'; 
 
-            // Полный текст, который будет скопирован или использован в Web Share
-            const fullMessage = `${messageText}\n>>> ${botLink}`;
+            const fullMessage = `ChickinSpin: Мой выигрыш!\n${messageText}\n>>> ${botLink} <<<`;
 
             if (navigator.share) {
-                // Web Share API 
                 navigator.share({
                     title: 'ChickinSpin: Мой выигрыш!',
                     text: fullMessage, 
                 })
                 .catch(error => console.log('Ошибка поделиться', error));
             } else {
-                // Fallback (копирование в буфер обмена)
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(fullMessage).then(() => {
                         alert('Статистика скопирована в буфер обмена! Вы можете отправить ее в любой мессенджер.');
@@ -699,11 +703,18 @@
                         const symbolHeight = entry.contentRect.height;
                          document.querySelectorAll('.reel-inner').forEach(inner => {
                             inner.querySelectorAll('.symbol').forEach(symbol => {
-                                // Пересчитываем высоту символов при ресайзе
+                                // 1. Пересчитываем высоту символов при ресайзе
                                 symbol.style.height = `${symbolHeight}px`;
                             });
-                            // ИСПРАВЛЕНО: УДАЛЕНО принудительное 'transform: translateY(0)', которое вызывало сброс позиции и скачок.
-                            // inner.style.transform = `translateY(0)`; 
+
+                            // 2. ИСПРАВЛЕНИЕ 3: Корректируем позицию барабана после ресайза.
+                            // Мы знаем, что после спина выигрышный символ находится на позиции totalSpinSymbols - 1.
+                            const newTargetPosition = - ((totalSpinSymbols - 1) * symbolHeight);
+                            
+                            // Сбрасываем transition, чтобы избежать "скачка" при ресайзе
+                            inner.style.transition = 'none';
+                            // Применяем новую, скорректированную позицию
+                            inner.style.transform = `translateY(${newTargetPosition}px)`;
                         });
                     }
                 }
