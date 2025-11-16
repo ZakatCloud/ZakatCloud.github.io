@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Дает всегда! V30</title>
+    <title>ChickinSpin - Дает всегда! V31</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -61,29 +61,8 @@
         .header-chick { width: 45px; height: 45px; object-fit: contain; border-radius: 5px; filter: drop-shadow(0 0 8px var(--primary-gold)); }
         
         /* --- Инфо-панели --- */
-        .jackpot-box {
-            background: linear-gradient(45deg, #A30000, var(--secondary-red));
-            border: 3px solid var(--primary-gold);
-            border-radius: 10px;
-            text-align: center;
-            padding: 10px;
-            margin: 0 var(--content-padding) 15px var(--content-padding);
-            box-shadow: 0 0 15px var(--secondary-red);
-        }
-        .jackpot-box h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.2em;
-            color: white;
-            font-weight: 700;
-        }
-        .jackpot-box span {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2em;
-            font-weight: 900;
-            color: #FFFF00;
-            text-shadow: 0 0 10px #FFD700;
-            display: block;
-        }
+        
+        /* V31: УДАЛЕН jackpot-box */
 
         .glass-panel { 
             background: var(--glass-bg); 
@@ -274,10 +253,6 @@
             </h1>
         </div>
         
-        <div class="jackpot-box">
-            <h3>ПРОГРЕССИВНЫЙ ДЖЕКПОТ</h3>
-            <span id="jackpotDisplay">5000</span>
-        </div>
         <div class="info-panel-wrapper glass-panel">
             <div class="info-panel">
                 <div class="display-box">
@@ -327,8 +302,11 @@
         const SYMBOL_CHICK_PNG = 'CHICK_PNG'; 
         const SYMBOL_CHICK_JPG = 'CHICK_JPG'; 
         const symbols = ['👑', '💎', '💰', '⭐', SYMBOL_CHICK_PNG, SYMBOL_CHICK_JPG, '🥚', '🍒'];
-        // Уменьшенный набор символов для более частых совпадений (но снижен шанс использования)
+        // Символы, которые выпадают чаще
         const highFrequencySymbols = symbols.slice(0, 4);
+        // Символы, которые могут дать выигрыш (исключая пустые)
+        const highValueSymbols = symbols.slice(0, 6); // 👑, 💎, 💰, ⭐, CHICK_PNG, CHICK_JPG
+
 
         const numReels = 3;
         const totalSpinSymbols = 30; // Всего символов на барабане
@@ -337,7 +315,7 @@
         const spinButton = document.getElementById('spinButton');
         const shareButton = document.getElementById('shareButton');     
         const balanceDisplay = document.getElementById('balanceDisplay');
-        const jackpotDisplay = document.getElementById('jackpotDisplay'); // V30: Новый элемент
+        // V31: jackpotDisplay УДАЛЕН
         const resultDisplay = document.getElementById('resultDisplay');
         const betInput = document.getElementById('betInput');
         const bonusChanceDisplay = document.getElementById('bonusChanceDisplay');
@@ -354,16 +332,14 @@
         
         const MIN_BALANCE_LIMIT = 5; 
 
-        // --- V30: СНИЖЕННЫЕ ВЫПЛАТЫ ДЛЯ БАЛАНСИРОВКИ ---
-        let progressiveJackpot = 5000; // Базовая сумма прогрессивного джекпота
-
+        // --- V31: СКОРРЕКТИРОВАННЫЕ ВЫПЛАТЫ ---
         const PAYOUTS = {
-            TRIPLE_MATCH: 50,  // БАЗОВЫЙ множитель, к которому добавится прогрессивный джекпот
-            CHICK_BONUS: 15,   // Снижено с 30x до 15x
-            DOUBLE_MATCH: 2,   // Снижено с 3x до 2x
-            ANY_CHICK: 1.5     // Снижено с 2x до 1.5x
+            TRIPLE_MATCH: 100,  // 100x (1000 за 10 руб) - Редкий, но крупный
+            CHICK_BONUS: 15,    // 15x
+            DOUBLE_MATCH: 2,    // 2x
+            ANY_CHICK: 1.5      // 1.5x
         };
-        // -------------------------------------------------
+        // ----------------------------------------
         
         let lastFinalSymbols = [highFrequencySymbols[0], highFrequencySymbols[1], highFrequencySymbols[2]]; 
         
@@ -442,7 +418,7 @@
             const savedBalance = localStorage.getItem('slotBalance');
             const savedBonus = localStorage.getItem('slotBonusChance');
             const savedSymbols = localStorage.getItem('lastFinalSymbols');
-            const savedJackpot = localStorage.getItem('progressiveJackpot'); // V30: Загрузка джекпота
+            // V31: savedJackpot УДАЛЕН
             
             if (savedBalance) {
                 balance = parseInt(savedBalance);
@@ -453,13 +429,10 @@
             if (savedSymbols) {
                  lastFinalSymbols = JSON.parse(savedSymbols);
             }
-             if (savedJackpot) {
-                progressiveJackpot = parseInt(savedJackpot);
-            }
+            // V31: jackpotDisplay УДАЛЕН
             
             balanceDisplay.textContent = balance;
             bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
-            jackpotDisplay.textContent = progressiveJackpot.toFixed(0); // V30: Обновление джекпота
             updateButtonsState(false);
         }
 
@@ -467,7 +440,7 @@
             localStorage.setItem('slotBalance', balance);
             localStorage.setItem('slotBonusChance', bonusChance);
             localStorage.setItem('lastFinalSymbols', JSON.stringify(lastFinalSymbols));
-            localStorage.setItem('progressiveJackpot', progressiveJackpot); // V30: Сохранение джекпота
+            // V31: Сохранение progressiveJackpot УДАЛЕНО
         }
 
         /**
@@ -482,7 +455,7 @@
          */
         function rebuildReelsAndSetPosition() {
             const symbolHeight = getSymbolHeight();
-            const roundedHeight = Math.round(symbolHeight); // V30: Округление для предотвращения ошибок
+            const roundedHeight = Math.round(symbolHeight); // Округление для предотвращения ошибок
             const targetPosition = - ((totalSpinSymbols - 1) * roundedHeight);
 
             reelContainer.innerHTML = '';
@@ -504,7 +477,7 @@
                     if (j === totalSpinSymbols - 1) {
                          symbolToUse = lastFinalSymbols[i] || highFrequencySymbols[0];
                     } else {
-                        // V30: Шанс на частые символы уменьшен до 40% (0.4)
+                        // V31: Шанс на частые символы уменьшен до 40% (0.4)
                         const symbolSet = Math.random() < 0.4 ? highFrequencySymbols : symbols;
                         symbolToUse = symbolSet[Math.floor(Math.random() * symbolSet.length)];
                     }
@@ -527,7 +500,7 @@
         function spinReel(reelIndex, finalSymbol) {
             const inner = document.getElementById(`reel-inner-${reelIndex}`);
             const symbolHeight = getSymbolHeight();
-            const roundedHeight = Math.round(symbolHeight); // V30: Округление для предотвращения ошибок
+            const roundedHeight = Math.round(symbolHeight); // Округление для предотвращения ошибок
             
             // --- СБРОС СТИЛЕЙ И КОНТЕНТА ---
             inner.style.transition = 'none'; 
@@ -544,7 +517,7 @@
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${roundedHeight}px`;
                     
-                    // V30: Шанс на частые символы уменьшен до 40% (0.4)
+                    // Шанс на частые символы уменьшен до 40% (0.4)
                     const symbolSet = Math.random() < 0.4 ? highFrequencySymbols : symbols;
                     let randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
                     
@@ -591,27 +564,33 @@
             resultDisplay.textContent = 'ВРАЩЕНИЕ...';
             resultDisplay.className = '';
 
-            // V30: Пополнение прогрессивного джекпота
-            const jackpotContribution = currentBet * 0.1; // 10% от ставки
-            progressiveJackpot += jackpotContribution;
-            jackpotDisplay.textContent = progressiveJackpot.toFixed(0); 
+            // V31: Логика пополнения прогрессивного джекпота УДАЛЕНА
             
             spinSound.play().catch(e => console.log('Ошибка воспроизведения звука: ', e));
 
             let isBonusGame = (Math.random() * 100 < bonusChance);
             let finalSymbols = [];
 
-            // --- V30: УСЛОЖНЕННАЯ ЛОГИКА ВЫБОРА ФИНАЛЬНЫХ СИМВОЛОВ ---
-            const allSymbolsForWin = symbols; // Используем ВСЕ 8 символов
+            // --- V31: СБАЛАНСИРОВАННАЯ ЛОГИКА ВЫБОРА ФИНАЛЬНЫХ СИМВОЛОВ (ЧАЩЕ, НО НЕ ВСЕГДА ВЫИГРЫШ) ---
+            const allSymbols = symbols; 
+            
             for (let i = 0; i < numReels; i++) {
-                if (Math.random() < 0.05) { 
-                    // 5% шанс для Курицы (PNG/JPG)
-                    finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
-                } else {
-                    // 95% шанс выбрать из ВСЕХ 8 символов. 
-                    // Это сильно снижает шанс тройного совпадения, т.к. в наборе теперь есть "пустые" символы ('🥚', '🍒').
-                    finalSymbols.push(allSymbolsForWin[Math.floor(Math.random() * allSymbolsForWin.length)]); 
+                let symbolPool;
+                
+                // 30% шанс на выбор из 4 высокочастотных символов (👑, 💎, 💰, ⭐)
+                if (Math.random() < 0.3) { 
+                    symbolPool = highFrequencySymbols; 
+                } 
+                // 50% шанс на выбор из 6 символов (включая куриц)
+                else if (Math.random() < 0.8) { 
+                    symbolPool = highValueSymbols; 
                 }
+                // 20% шанс на выбор из всех 8 символов (включая '🥚', '🍒')
+                else {
+                    symbolPool = allSymbols; 
+                }
+                
+                finalSymbols.push(symbolPool[Math.floor(Math.random() * symbolPool.length)]); 
             }
         
             if (isBonusGame) {
@@ -630,15 +609,18 @@
             
             stopSpinSound();
             
-            // --- СТАБИЛИЗАЦИЯ ПОЗИЦИИ (ФИКС ИЗ V28) ---
+            // --- СТАБИЛИЗАЦИЯ ПОЗИЦИИ ---
             const symbolHeight = getSymbolHeight();
             const roundedHeight = Math.round(symbolHeight);
             const targetPosition = - ((totalSpinSymbols - 1) * roundedHeight);
 
-            document.querySelectorAll('.reel-inner').forEach(inner => {
-                inner.style.transition = 'none';
-                inner.style.transform = `translateY(${targetPosition}px)`;
-            });
+            // Небольшая задержка для гарантированной фиксации после анимации
+            setTimeout(() => {
+                document.querySelectorAll('.reel-inner').forEach(inner => {
+                    inner.style.transition = 'none';
+                    inner.style.transform = `translateY(${targetPosition}px)`;
+                });
+            }, 50); 
             // ------------------------------------------
 
             lastFinalSymbols = resolvedSymbols;
@@ -665,15 +647,13 @@
                 resultClass = 'bonus';
                 playOverlay = true;
             } else if (s1 === s2 && s2 === s3) {
-                // V30: Выплата = Базовый множитель + Прогрессивный Джекпот
-                winAmount = playedBet * PAYOUTS.TRIPLE_MATCH + progressiveJackpot; 
+                // V31: Просто крупный множитель
+                winAmount = playedBet * PAYOUTS.TRIPLE_MATCH; 
                 message = `👑 МЕГА ДЖЕКПОТ! Выигрыш: ${winAmount.toFixed(0)}!`;
                 resultClass = 'jackpot';
                 playOverlay = true;
                 
-                // V30: Сброс джекпота
-                progressiveJackpot = 5000;
-                jackpotDisplay.textContent = progressiveJackpot.toFixed(0);
+                // V31: Сброс джекпота УДАЛЕН
                 
             } else if (isChick(s1) && isChick(s2) && isChick(s3)) {
                 winAmount = playedBet * PAYOUTS.ANY_CHICK; 
@@ -710,19 +690,32 @@
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
             
-            // Снижение скорости роста бонусного шанса для балансировки
+            // --- V31: УПРАВЛЕНИЕ RTP/Шансом Бонуса (Милосердие Чикина) ---
+            const LOW_BALANCE_THRESHOLD = 100;
+
             if (playOverlay) {
+                // Если был крупный выигрыш, сбрасываем шанс
                 if (isBonus) bonusChance = 1;
-                else bonusChance += 5; 
+                else bonusChance = Math.max(1, bonusChance - 3); // Сброс бонуса после джекпота
             } else if (winAmount > 0) {
+                 // Небольшой выигрыш
                  bonusChance += 0.5; 
             } else {
-                bonusChance = Math.max(1, bonusChance - 0.5);
+                // Проигрыш: Увеличиваем шанс быстрее
+                bonusChance += 1.0; 
+            }
+            
+            // Логика "Милосердие Чикина": если проиграл и баланс низкий
+            if (winAmount === 0 && balance < LOW_BALANCE_THRESHOLD && playedBet >= 10) {
+                 // Резко повышаем шанс бонуса для следующего спина
+                 bonusChance = 90; 
+                 resultDisplay.textContent = 'БАЛАНС НИЗКИЙ! Шанс бонуса увеличен!';
             }
 
-            bonusChance = Math.min(25, bonusChance); 
+            bonusChance = Math.min(40, bonusChance); // Ограничиваем максимальный бонус до 40% (кроме "милосердия")
             bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
-            
+            // -------------------------------------------------------------
+
             if (playOverlay) {
                 showWinOverlay(isBonus ? "БОНУСНЫЙ ВЫИГРЫШ" : "СУПЕР ДЖЕКПОТ", winAmount.toFixed(0));
                 return true; 
