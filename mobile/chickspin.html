@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Казино Симулятор v12</title>
+    <title>ChickinSpin - Дает всегда!</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -12,116 +12,223 @@
             --secondary-red: #A30000;
             --dark-bg: #140808;
             --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.2);
             --reel-bg: #000;
-            --spin-gold: #FFC300;
             --spin-shadow: #8B0000;
+            --content-padding: 10px; 
         }
 
         /* --- Общие Стили --- */
-        html, body { height: 100%; touch-action: manipulation; }
+        html, body { 
+            height: 100%; 
+            min-height: 100vh;
+            touch-action: manipulation;
+        }
+        
         body {
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
+            align-items: center; 
             margin: 0;
             background: radial-gradient(circle at center, #361717 0%, var(--dark-bg) 100%);
             font-family: 'Roboto', sans-serif;
             color: #ffffff;
             user-select: none;
-            overflow: hidden;
-            position: relative; /* Для позиционирования прелоадера */
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            position: relative;
         }
         
-        /* --- Preloader Стили --- */
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .slot-machine-wrapper {
             width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, #421D1D 0%, #100000 100%);
+            flex-grow: 1; 
+            max-width: 500px; 
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 1s ease;
+            padding: 0 0 15px 0; 
+            margin: 0 auto; 
+            box-sizing: border-box; 
         }
 
-        .preloader h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5em;
-            color: var(--primary-gold);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-            margin: 10px 0 0 0;
-            font-weight: 900;
-        }
-        
-        .preloader img {
-            width: 100px;
-            height: 100px;
-            filter: drop-shadow(0 0 15px var(--primary-gold));
-        }
-
-        .preloader p {
-            font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 5px;
-        }
-
-        .loader-bar {
-            width: 80%;
-            max-width: 300px;
-            height: 8px;
-            background: #333;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 30px;
-        }
-        
-        .loader-progress {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #FFC300, #A30000);
-            transition: width 0.5s ease;
-        }
-
-        /* --- Основной UI (Стили не изменены, кроме прелоадера) --- */
-        .slot-machine-wrapper { width: 100%; flex-grow: 1; max-width: 500px; display: flex; flex-direction: column; padding: 0 15px 15px 15px; }
+        /* --- Header и Preloader --- */
+        .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #421D1D 0%, #100000 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 1s ease; }
+        .preloader h1 { font-family: 'Playfair Display', serif; font-size: 3.5em; color: var(--primary-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.7); margin: 10px 0 0 0; font-weight: 900; }
+        .preloader img { width: 100px; height: 100px; filter: drop-shadow(0 0 15px var(--primary-gold)); }
+        .preloader p { font-size: 0.9em; color: rgba(255, 255, 255, 0.5); margin-top: 5px; }
+        .loader-bar { width: 80%; max-width: 300px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-top: 30px; }
+        .loader-progress { height: 100%; width: 0%; background: linear-gradient(90deg, #FFC300, #A30000); transition: width 0.5s ease; }
         .brand-header { width: 100%; background: var(--dark-bg); padding: 15px 0; margin-bottom: 5px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7); border-bottom: 4px solid var(--secondary-red); }
         .brand-header h1 { font-family: 'Playfair Display', serif; font-size: 2.5em; color: var(--primary-gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px var(--secondary-red); margin: 0; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 15px; }
         .header-chick { width: 45px; height: 45px; object-fit: contain; border-radius: 5px; filter: drop-shadow(0 0 8px var(--primary-gold)); }
-        .glass-panel { background: var(--glass-bg); border-radius: 20px; box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 2px solid var(--primary-gold); }
-        .info-panel-wrapper { margin-bottom: 15px; padding: 15px; }
+        
+        /* --- Инфо-панели --- */
+        .glass-panel { 
+            background: var(--glass-bg); 
+            border-radius: 20px; 
+            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.5); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px); 
+            border: 2px solid var(--primary-gold); 
+        }
+        .info-panel-wrapper { 
+            margin-bottom: 15px; 
+            padding: 15px var(--content-padding); 
+            margin: 0 var(--content-padding) 15px var(--content-padding);
+        }
         .info-panel { display: flex; justify-content: space-between; width: 100%; gap: 8px; padding: 0; }
         .display-box { flex-grow: 1; min-width: 0; background-color: var(--reel-bg); border-radius: 8px; padding: 8px 5px; font-size: 0.85em; text-align: center; box-shadow: inset 0 0 5px rgba(255, 215, 0, 0.3); border: 1px solid var(--primary-gold); }
         .display-box span { font-size: 1.1em; }
-        .reels-container { display: flex; justify-content: space-around; flex-grow: 1; align-items: center; margin-bottom: 20px; background: var(--reel-bg); border-radius: 12px; padding: 10px; border: 3px solid var(--secondary-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); width: 100%; min-height: 200px; max-height: 50vh; }
+        
+        /* --- Барабаны --- */
+        .reels-container { 
+            display: flex; 
+            justify-content: space-around; 
+            flex-grow: 1; 
+            align-items: center; 
+            margin: 0 var(--content-padding) 20px var(--content-padding); 
+            background: var(--reel-bg); 
+            border-radius: 12px; 
+            padding: 10px; 
+            border: 3px solid var(--secondary-red); 
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); 
+            width: auto; 
+            min-height: 200px; 
+            max-height: 50vh; 
+        }
         .reel { width: 30%; height: 100%; border-radius: 5px; overflow: hidden; background-color: #000; position: relative; }
         .reel-inner { position: absolute; width: 100%; will-change: transform; }
         .symbol { height: auto; display: flex; justify-content: center; align-items: center; font-size: 4em; font-weight: bold; color: var(--primary-gold); text-shadow: 0 0 8px #fff; background: linear-gradient(135deg, #222 0%, #000 100%); }
         .symbol img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 0 5px #ffd700); }
         .spinning { animation: none; }
-        .controls { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 15px; padding: 15px; }
-        #spinButton { flex-grow: 1; padding: 15px 30px; font-size: 1.5em; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, var(--primary-gold) 0%, #FFC300 50%, #FFD700 100%); color: var(--spin-shadow); border: 3px solid var(--secondary-red); border-radius: 12px; box-shadow: 0 8px 0 var(--spin-shadow), inset 0 3px 5px rgba(255, 255, 255, 0.6); transition: all 0.1s ease; text-transform: uppercase; }
+        
+        /* --- Элементы управления --- */
+        .controls { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: auto; 
+            gap: 15px; 
+            padding: 15px;
+            margin: 0 var(--content-padding) 10px var(--content-padding); 
+        }
+
+        #spinButton { 
+            flex-grow: 1;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-weight: 900;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, #FFC300 50%, #FFD700 100%);
+            color: var(--spin-shadow);
+            border: 3px solid var(--secondary-red);
+            border-radius: 12px;
+            box-shadow: 0 8px 0 var(--spin-shadow), inset 0 3px 5px rgba(255, 255, 255, 0.6);
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+        }
+
         #spinButton:hover:not(:disabled) { background: linear-gradient(135deg, #FFC300, var(--primary-gold)); box-shadow: 0 4px 0 var(--spin-shadow); transform: translateY(4px); }
         #spinButton:disabled { background: #555; box-shadow: 0 4px #333; cursor: not-allowed; color: #bbb; transform: translateY(4px); border: 3px solid #333; }
-        .bet-control { border: none; padding: 0; display: flex; flex-direction: column; align-items: flex-start; margin-right: 15px; }
+        
+        .bet-control { 
+            border: none; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            margin-right: 15px; 
+            flex-shrink: 0;
+        }
+
         .bet-control label { font-size: 0.85em; color: var(--primary-gold); margin-bottom: 5px; font-weight: 700; }
         .bet-control input { width: 80px; padding: 8px; text-align: center; background-color: var(--reel-bg); border: 2px solid var(--primary-gold); border-radius: 8px; color: #4CAF50; font-size: 1.2em; font-weight: 700; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); -moz-appearance: textfield; }
         .bet-control input::-webkit-outer-spin-button, .bet-control input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* --- Кнопка "Поделиться" (Новая мелкая с текстом) --- */
+        .additional-controls {
+            display: flex;
+            justify-content: flex-end; 
+            align-items: center;
+            width: auto;
+            gap: 10px;
+            padding: 0 0 15px 0;
+            margin: 0 var(--content-padding);
+        }
+        
+        .share-button {
+            flex-shrink: 0;
+            padding: 8px 15px;
+            height: auto;
+            width: auto;
+            border-radius: 8px; 
+            background: #4CAF50;
+            color: white;
+            font-size: 1em; 
+            line-height: 1.2;
+            text-align: center;
+            border: 2px solid #2e8b57;
+            box-shadow: 0 4px 0 #2e8b57;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+        }
+
+        .share-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2e8b57;
+        }
+        
+        /* --- Стили оверлея --- */
         .win { color: #4CAF50 !important; font-weight: 700; } .jackpot { color: #FF00FF !important; text-shadow: 0 0 5px #FF00FF; font-weight: 900; } .lose { color: var(--secondary-red) !important; } .bonus { color: var(--primary-gold) !important; text-shadow: 0 0 5px var(--primary-gold); font-weight: 900; }
-        #winOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0s 0.5s; z-index: 1000; }
+        
+        #winOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0s 0.5s; z-index: 1000; 
+            text-align: center; 
+        }
+        
         #winOverlay.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease; }
-        #winOverlay h2 { font-family: 'Playfair Display', serif; font-size: 3.5em; color: var(--primary-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 5px #fff; margin-bottom: 20px; animation: pulse 1.5s infinite; }
-        #winAmount { font-size: 6em; font-weight: 900; color: #4CAF50; text-shadow: 0 0 15px #0f0; line-height: 1; }
+        
+        #winOverlay h2 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 3.5em; 
+            color: var(--primary-gold); 
+            text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 5px #fff; 
+            margin-bottom: 20px; 
+            animation: pulse 1.5s infinite; 
+            text-align: center; 
+            width: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        
+        #winAmount { 
+            font-size: 6em; 
+            font-weight: 900; 
+            color: #4CAF50; 
+            text-shadow: 0 0 15px #0f0; 
+            line-height: 1; 
+            display: block;
+            width: 100%;
+            text-align: center; 
+        }
+        
         #winOverlay button { margin-top: 30px; padding: 15px 40px; background: linear-gradient(45deg, #4CAF50, #00FF00); color: black; font-size: 1.5em; font-weight: 700; border: 3px solid #000; border-radius: 10px; cursor: pointer; box-shadow: 0 5px #2e8b57; transition: all 0.1s; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .jackpot-message { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
+        
+        .jackpot-message { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-bottom: 40px; 
+            width: 100%;
+        }
+        
         .jackpot-message h3 { font-family: 'Playfair Display', serif; font-size: 1.8em; color: #fff; text-shadow: 0 0 10px var(--secondary-red); margin: 10px 0; font-weight: 700; }
-        .jackpot-message img { width: 80px; height: 80px; border-radius: 50%; border: 5px solid var(--primary-gold); object-fit: cover; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        .jackpot-message img { width: 80px; height: 80px; border: 5px solid var(--primary-gold); object-fit: cover; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
 
     </style>
 </head>
@@ -170,6 +277,12 @@
             </div>
             <button id="spinButton">SPIN</button>
         </div>
+
+        <div class="additional-controls">
+            <button id="shareButton" class="share-button">
+                Поделиться
+            </button>
+        </div>
     </div>
 
     <div id="winOverlay">
@@ -183,16 +296,18 @@
     </div>
 
     <script>
-        // --- JavaScript Логика (Обновлена система RTP) ---
+        // --- JavaScript Логика (RTP/Казино) ---
         const SYMBOL_CHICK_PNG = 'CHICK_PNG'; 
         const SYMBOL_CHICK_JPG = 'CHICK_JPG'; 
         const symbols = ['👑', '💎', '💰', '⭐', SYMBOL_CHICK_PNG, SYMBOL_CHICK_JPG, '🥚', '🍒'];
-        
+        const highFrequencySymbols = symbols.slice(0, 4);
+
         const numReels = 3;
         const totalSpinSymbols = 30;
         
         const reelContainer = document.querySelector('.reels-container');
         const spinButton = document.getElementById('spinButton');
+        const shareButton = document.getElementById('shareButton');     
         const balanceDisplay = document.getElementById('balanceDisplay');
         const resultDisplay = document.getElementById('resultDisplay');
         const betInput = document.getElementById('betInput');
@@ -207,14 +322,14 @@
         let bet = 10;
         let isSpinning = false;
         let bonusChance = 1;
+        
+        const MIN_BALANCE_LIMIT = 5; 
 
-        // --- МНОЖИТЕЛИ ВЫИГРЫША (RTP/Дисперсия) ---
-        // Изменены множители для более реалистичной симуляции казино
         const PAYOUTS = {
-            TRIPLE_MATCH: 100,  // Редкий, но крупный выигрыш (Джекпот)
-            CHICK_BONUS: 30,    // Средний выигрыш
-            DOUBLE_MATCH: 5,    // Частый, но малый/окупаемый выигрыш
-            ANY_CHICK: 3        // Любые два символа "Chick" (PNG или JPG)
+            TRIPLE_MATCH: 150,  
+            CHICK_BONUS: 30,    
+            DOUBLE_MATCH: 3,    
+            ANY_CHICK: 2        
         };
         
         // --- Аудио Инициализация ---
@@ -247,11 +362,15 @@
         }
         
         function showWinOverlay(title, amount) {
+            winTitle.style.fontSize = '3.5em'; 
+            winAmountDisplay.className = ''; 
+            
             winTitle.textContent = title;
             winAmountDisplay.textContent = amount;
             winOverlay.classList.add('active');
             spinButton.disabled = true;
             betInput.disabled = true;
+            shareButton.disabled = true;
             winMusic.play().catch(e => console.log('Ошибка воспроизведения музыки: ', e));
         }
 
@@ -259,9 +378,30 @@
             winOverlay.classList.remove('active');
             winMusic.pause();
             winMusic.currentTime = 0;
-            spinButton.disabled = false;
-            betInput.disabled = false;
+            updateButtonsState(false);
         }
+
+        function updateButtonsState(spinning) {
+            isSpinning = spinning;
+            spinButton.disabled = spinning || balance < 1;
+            betInput.disabled = spinning || balance < 1;
+            shareButton.disabled = spinning;
+            
+            if (balance <= MIN_BALANCE_LIMIT && balance > 0) {
+                 resultDisplay.textContent = 'БАЛАНС НА ИСХОДЕ!';
+                 resultDisplay.className = 'lose';
+                 betInput.max = balance;
+            } else {
+                 betInput.max = 100;
+            }
+            if (balance <= 0) {
+                spinButton.disabled = true;
+                betInput.disabled = true;
+                resultDisplay.textContent = 'ИГРА ОКОНЧЕНА! Обновите страницу.';
+                resultDisplay.className = 'lose';
+            }
+        }
+
 
         function loadGame() {
             const savedBalance = localStorage.getItem('slotBalance');
@@ -275,6 +415,7 @@
             }
             balanceDisplay.textContent = balance;
             bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
+            updateButtonsState(false);
         }
 
         function saveGame() {
@@ -300,7 +441,10 @@
                     const symbolDiv = document.createElement('div');
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
-                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    
+                    const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
+                    const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
                     innerDiv.appendChild(symbolDiv);
                 }
@@ -324,8 +468,12 @@
                     const symbolDiv = inner.children[i];
                     symbolDiv.innerHTML = '';
                     symbolDiv.style.height = `${symbolHeight}px`;
-                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    
+                    const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
+                    const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+                    
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
+                    inner.appendChild(symbolDiv);
                 }
                 
                 const finalSymbolDiv = inner.children[totalSpinSymbols - 1];
@@ -349,18 +497,17 @@
         }
         
         async function spinSlots() {
-            bet = parseInt(betInput.value); 
-            if (isNaN(bet) || bet <= 0 || balance < bet) {
-                resultDisplay.textContent = balance < bet ? 'НЕДОСТАТОЧНО СРЕДСТВ!' : 'Неверная ставка!';
+            let currentBet = parseInt(betInput.value);
+
+            if (isNaN(currentBet) || currentBet <= 0 || balance < currentBet) {
+                resultDisplay.textContent = balance < currentBet ? 'НЕДОСТАТОЧНО СРЕДСТВ!' : 'Неверная ставка!';
                 resultDisplay.className = 'lose';
                 return;
             }
             
-            isSpinning = true;
-            spinButton.disabled = true;
-            betInput.disabled = true;
+            updateButtonsState(true);
             
-            balance -= bet;
+            balance -= currentBet;
             balanceDisplay.textContent = balance;
             resultDisplay.textContent = 'ВРАЩЕНИЕ...';
             resultDisplay.className = '';
@@ -368,19 +515,17 @@
             spinSound.play().catch(e => console.log('Ошибка воспроизведения звука: ', e));
 
             let isBonusGame = (Math.random() * 100 < bonusChance);
+            let finalSymbols = [];
 
-            // --- Генерация результатов с учетом RTP (увеличен шанс на малый выигрыш) ---
-            const finalSymbols = [];
+            // Стандартная логика:
             for (let i = 0; i < numReels; i++) {
-                 // Шанс получить символ Chick (для бонуса или малого выигрыша)
-                if (Math.random() < 0.25) { 
-                    finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]); // Chick PNG или JPG
+                if (Math.random() < 0.05) { 
+                    finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
                 } else {
-                    finalSymbols.push(symbols[Math.floor(Math.random() * 4)]); // Корона, Алмаз, Монета, Звезда
+                    finalSymbols.push(highFrequencySymbols[Math.floor(Math.random() * highFrequencySymbols.length)]); 
                 }
             }
-            
-            // Если выпадает бонус, принудительно ставим Chick PNG на 3-й барабан
+        
             if (isBonusGame) {
                  finalSymbols[2] = SYMBOL_CHICK_PNG;
             }
@@ -395,52 +540,65 @@
             
             stopSpinSound();
 
-            isSpinning = false;
-            
-            if (!checkWin(resolvedSymbols, isBonusGame)) {
-                spinButton.disabled = false;
-                betInput.disabled = false;
+            if (!checkWin(resolvedSymbols, isBonusGame, currentBet)) {
+                updateButtonsState(false);
             }
             
             saveGame();
         }
 
-        // --- ОБНОВЛЕННАЯ ФУНКЦИЯ: Более сложная логика выигрыша ---
-        function checkWin(symbolsArr, isBonus) {
+        function checkWin(symbolsArr, isBonus, playedBet) {
             const [s1, s2, s3] = symbolsArr;
             let winAmount = 0;
             let message = 'НЕ ПОВЕЗЛО... 😞';
             let resultClass = 'lose';
             let playOverlay = false;
 
-            // Вспомогательная функция для проверки, является ли символ "Chick"
             const isChick = (s) => s === SYMBOL_CHICK_PNG || s === SYMBOL_CHICK_JPG;
 
             if (isBonus) {
-                // 1. Бонусный выигрыш (Chick Bonus)
-                winAmount = bet * PAYOUTS.CHICK_BONUS;
+                winAmount = playedBet * PAYOUTS.CHICK_BONUS;
                 message = `🎁 БОНУС! Куриное Золото: ${winAmount}!`;
                 resultClass = 'bonus';
                 playOverlay = true;
             } else if (s1 === s2 && s2 === s3) {
-                // 2. Тройное совпадение (Джекпот)
-                winAmount = bet * PAYOUTS.TRIPLE_MATCH; 
+                winAmount = playedBet * PAYOUTS.TRIPLE_MATCH; 
                 message = `👑 ДЖЕКПОТ! Выигрыш: ${winAmount}!`;
                 resultClass = 'jackpot';
                 playOverlay = true;
             } else if (isChick(s1) && isChick(s2) && isChick(s3)) {
-                // 3. Любые три Chick (Низкий выигрыш, но частый)
-                winAmount = bet * PAYOUTS.ANY_CHICK; 
+                winAmount = playedBet * PAYOUTS.ANY_CHICK; 
                 message = `🐔 3 Курицы! Выигрыш: +${winAmount}!`;
                 resultClass = 'win';
             } else if ((s1 === s2) || (s2 === s3) || (s1 === s3)) {
-                // 4. Двойное совпадение (Самый частый, окупаемый выигрыш)
-                winAmount = bet * PAYOUTS.DOUBLE_MATCH; 
+                winAmount = playedBet * PAYOUTS.DOUBLE_MATCH; 
                 message = `💰 Выигрыш! +${winAmount}!`;
                 resultClass = 'win';
             }
             
             balance += winAmount;
+            
+            // --- ЛОГИКА: СПАСЕНИЕ ОТ НУЛЯ ---
+            if (balance <= 0) {
+                balance = 15; // Даем 15 рублей
+                saveGame(); 
+                
+                // Выводим сообщение о спасении
+                showWinOverlay("ЧИКИН ДАЕТ НОВЫЙ ШАНС", 15);
+                winTitle.style.fontSize = '2.5em'; 
+                winTitle.textContent = "Чикин дает новый шанс, ведь этот ты проиграл"; 
+                winAmountDisplay.textContent = "15";
+                winAmountDisplay.className = 'win'; 
+                balanceDisplay.textContent = balance;
+                
+                // Сброс бонуса
+                bonusChance = 1;
+                bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
+
+                return true; 
+            }
+            // --- КОНЕЦ ЛОГИКИ СПАСЕНИЯ ---
+
             balanceDisplay.textContent = balance;
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
@@ -450,9 +608,9 @@
                 if (isBonus) bonusChance = 1;
                 else bonusChance += 7;
             } else if (winAmount > 0) {
-                 bonusChance += 1; // Уменьшен прирост при малом выигрыше
+                 bonusChance += 1;
             } else {
-                bonusChance = Math.max(1, bonusChance - 0.5); // Уменьшен штраф при проигрыше
+                bonusChance = Math.max(1, bonusChance - 0.5);
             }
 
             bonusChance = Math.min(25, bonusChance); 
@@ -462,15 +620,40 @@
                 showWinOverlay(isBonus ? "БОНУСНЫЙ ВЫИГРЫШ" : "СУПЕР ДЖЕКПОТ", winAmount);
                 return true; 
             }
-
-            if (balance <= 0) {
-                spinButton.disabled = true;
-                betInput.disabled = true;
-                resultDisplay.textContent = 'ИГРА ОКОНЧЕНА! Обновите страницу.';
-                resultDisplay.className = 'lose';
-            }
             return false;
         }
+
+        function shareStats() {
+            // ФОРМАТИРОВАНИЕ ДЛЯ ПОДЕЛИТЬСЯ (использует баланс из текущего состояния)
+            const messageText = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? Заходи!`;
+            const botLink = 'https://t.me/CHICKINSPINBOT/play'; // Фиксированная ссылка для отправки
+
+            // Полный текст, который будет скопирован или использован в Web Share
+            const fullMessage = `${messageText}\n>>> ${botLink}`;
+
+            if (navigator.share) {
+                // Web Share API (лучший способ, может отправить текст и ссылку отдельно)
+                navigator.share({
+                    title: 'ChickinSpin: Мой выигрыш!',
+                    text: fullMessage, // Отправляем весь текст с ссылкой внутри
+                    // URL: botLink, // Убрали, чтобы не было дублирования в некоторых мессенджерах
+                })
+                .catch(error => console.log('Ошибка поделиться', error));
+            } else {
+                // Fallback (копирование в буфер обмена)
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(fullMessage).then(() => {
+                        alert('Статистика скопирована в буфер обмена! Вы можете отправить ее в любой мессенджер.');
+                    }).catch(err => {
+                        console.error('Не удалось скопировать:', err);
+                        alert(`Не удалось скопировать. Скопируйте вручную:\n\n${fullMessage}`);
+                    });
+                } else {
+                    alert(`Скопируйте вручную:\n\n${fullMessage}`);
+                }
+            }
+        }
+
 
         // --- Управление Preloader ---
         function startLoading() {
@@ -486,25 +669,27 @@
                         preloader.style.display = 'none';
                         gameUI.style.opacity = '1';
                         initializeGame();
-                    }, 1000); // Задержка для плавного исчезновения
+                    }, 1000); 
                 }
                 loaderProgress.style.width = `${progress}%`;
-            }, 500); // Имитация загрузки
+            }, 500); 
         }
         
         function initializeGame() {
             loadGame();
             
-            // Даем DOM время на отрисовку перед созданием барабанов
             setTimeout(() => {
                 createReels();
             }, 50); 
             
-            spinButton.addEventListener('click', spinSlots);
+            spinButton.addEventListener('click', () => spinSlots());
+            shareButton.addEventListener('click', shareStats);
+
             betInput.addEventListener('change', () => {
                 const val = parseInt(betInput.value);
                 if (val > balance) betInput.value = balance; 
                 if (val < 1 || isNaN(val)) betInput.value = 1;
+                updateButtonsState(false); 
             });
             
             const resizeObserver = new ResizeObserver(entries => {
