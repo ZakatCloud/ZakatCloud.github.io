@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin V22</title>
+    <title>ChickinSpin - Дает всегда! V23</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -490,7 +490,7 @@
                     inner.style.transform = `translateY(${targetPosition}px)`;
                     
                     setTimeout(() => {
-                        // Ensure transition is cleared after the spin to prevent unintended effects on resize.
+                        // ИСПРАВЛЕНО: Убеждаемся, что переход (transition) полностью удален после окончания анимации.
                         inner.style.transition = 'none';
                         resolve(finalSymbol);
                     }, animationTime); 
@@ -627,17 +627,16 @@
 
         function shareStats() {
             // ФОРМАТИРОВАНИЕ ДЛЯ ПОДЕЛИТЬСЯ (использует баланс из текущего состояния)
-            const messageTitle = 'ChickinSpin: Мой выигрыш!';
             const messageText = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? Заходи!`;
-            const botLink = 't.me/CHICKINSPINBOT/play'; // Фиксированная ссылка для отправки
+            const botLink = 'https://t.me/CHICKINSPINBOT/play'; // Фиксированная ссылка для отправки
 
-            // Полный текст, который будет скопирован или использован в Web Share (ИСПРАВЛЕНО)
-            const fullMessage = `${messageTitle}\n${messageText}\n>>> ${botLink} <<<`;
+            // Полный текст, который будет скопирован или использован в Web Share
+            const fullMessage = `${messageText}\n>>> ${botLink}`;
 
             if (navigator.share) {
-                // Web Share API (лучший способ, может отправить текст и ссылку отдельно)
+                // Web Share API 
                 navigator.share({
-                    title: messageTitle,
+                    title: 'ChickinSpin: Мой выигрыш!',
                     text: fullMessage, 
                 })
                 .catch(error => console.log('Ошибка поделиться', error));
@@ -700,11 +699,11 @@
                         const symbolHeight = entry.contentRect.height;
                          document.querySelectorAll('.reel-inner').forEach(inner => {
                             inner.querySelectorAll('.symbol').forEach(symbol => {
-                                // Главное исправление: пересчитываем высоту символов при ресайзе
+                                // Пересчитываем высоту символов при ресайзе
                                 symbol.style.height = `${symbolHeight}px`;
                             });
-                            // УДАЛЕНО: inner.style.transform = `translateY(0)`; 
-                            // Эта строка вызывала нежелательный скачок/повторное вращение при ресайзе.
+                            // ИСПРАВЛЕНО: УДАЛЕНО принудительное 'transform: translateY(0)', которое вызывало сброс позиции и скачок.
+                            // inner.style.transform = `translateY(0)`; 
                         });
                     }
                 }
