@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin</title>
+    <title>ChickinSpin - Идеальное Мобильное Центрирование V21</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -362,7 +362,6 @@
         }
         
         function showWinOverlay(title, amount) {
-            // Сброс размера шрифта перед показом, чтобы не мешало предыдущее сообщение
             winTitle.style.fontSize = '3.5em'; 
             winAmountDisplay.className = ''; 
             
@@ -396,7 +395,6 @@
                  betInput.max = 100;
             }
             if (balance <= 0) {
-                // Это должно быть обработано функцией "Спасение от нуля"
                 spinButton.disabled = true;
                 betInput.disabled = true;
                 resultDisplay.textContent = 'ИГРА ОКОНЧЕНА! Обновите страницу.';
@@ -626,30 +624,32 @@
         }
 
         function shareStats() {
-            const message = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? @CHICKINSPIN`;
-            // Используем константный URL
-            const url = "https://zakatcloud.github.io/mobile/reserve"; 
-            
+            // ФОРМАТИРОВАНИЕ ДЛЯ ПОДЕЛИТЬСЯ (использует баланс из текущего состояния)
+            const messageText = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? Заходи!`;
+            const botLink = 'https://t.me/CHICKINSPINBOT/play'; // Фиксированная ссылка для отправки
+
+            // Полный текст, который будет скопирован или использован в Web Share
+            const fullMessage = `ChickinSpin: Мой выигрыш!\n${messageText}\n>>> ${botLink} <<<`;
+
             if (navigator.share) {
+                // Web Share API (лучший способ, может отправить текст и ссылку отдельно)
                 navigator.share({
                     title: 'ChickinSpin: Мой выигрыш!',
-                    text: message,
-                    url: url, 
+                    text: fullMessage, // Отправляем весь текст с ссылкой внутри
+                    // URL: botLink, // Убрали, чтобы не было дублирования в некоторых мессенджерах
                 })
                 .catch(error => console.log('Ошибка поделиться', error));
             } else {
-                // Fallback для устройств без Web Share API
-                // В fallback оставляем URL, чтобы пользователю было что отправить
-                const fallbackMessage = message + `\n${url}`; 
+                // Fallback (копирование в буфер обмена)
                 if (navigator.clipboard) {
-                    navigator.clipboard.writeText(fallbackMessage).then(() => {
+                    navigator.clipboard.writeText(fullMessage).then(() => {
                         alert('Статистика скопирована в буфер обмена! Вы можете отправить ее в любой мессенджер.');
                     }).catch(err => {
                         console.error('Не удалось скопировать:', err);
-                        alert(`Не удалось скопировать. Скопируйте вручную:\n\n${fallbackMessage}`);
+                        alert(`Не удалось скопировать. Скопируйте вручную:\n\n${fullMessage}`);
                     });
                 } else {
-                    alert(`Скопируйте вручную:\n\n${fallbackMessage}`);
+                    alert(`Скопируйте вручную:\n\n${fullMessage}`);
                 }
             }
         }
