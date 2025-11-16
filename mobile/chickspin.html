@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Дает всегда! V24</title>
+    <title>ChickinSpin - Дает всегда! V26</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -300,6 +300,7 @@
         const SYMBOL_CHICK_PNG = 'CHICK_PNG'; 
         const SYMBOL_CHICK_JPG = 'CHICK_JPG'; 
         const symbols = ['👑', '💎', '💰', '⭐', SYMBOL_CHICK_PNG, SYMBOL_CHICK_JPG, '🥚', '🍒'];
+        // Уменьшенный набор символов для более частых совпадений (но снижено до 60% шанс использования)
         const highFrequencySymbols = symbols.slice(0, 4);
 
         const numReels = 3;
@@ -425,14 +426,24 @@
 
         /**
          * Возвращает высоту одного символа, равную высоте контейнера.
-         * Барабан спроектирован так, что в контейнере виден один символ.
          */
         function getSymbolHeight() {
              return reelContainer.clientHeight; 
         }
         
-        function createReels() {
+        /**
+         * Пересобирает барабаны с новыми размерами и устанавливает их в финальную позицию.
+         * Используется для инициализации и стабилизации после ресайза (мобильная клавиатура/поворот экрана).
+         */
+        function rebuildReelsAndSetPosition() {
             const symbolHeight = getSymbolHeight();
+            // Позиция, где находится выигрышный символ (последний в списке totalSpinSymbols)
+            const targetPosition = - ((totalSpinSymbols - 1) * symbolHeight);
+
+            // Мгновенная очистка DOM
+            reelContainer.innerHTML = '';
+            
+            // Создаем новые барабаны
             for (let i = 0; i < numReels; i++) {
                 const reelDiv = document.createElement('div');
                 reelDiv.className = 'reel';
@@ -441,12 +452,14 @@
                 innerDiv.className = 'reel-inner';
                 innerDiv.id = `reel-inner-${i}`;
                 
+                // Создаем символы
                 for (let j = 0; j < totalSpinSymbols; j++) {
                     const symbolDiv = document.createElement('div');
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
                     
-                    const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
+                    // Символ для нового барабана
+                    const symbolSet = Math.random() < 0.6 ? highFrequencySymbols : symbols;
                     const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
 
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
@@ -455,42 +468,50 @@
                 
                 reelDiv.appendChild(innerDiv);
                 reelContainer.appendChild(reelDiv);
+
+                // МГНОВЕННЫЙ сброс CSS и установка в финальную позицию
+                innerDiv.style.transition = 'none';
+                innerDiv.style.transform = `translateY(${targetPosition}px)`;
             }
         }
-
+        
+        /**
+         * Вращает один барабан.
+         * Использует агрессивный сброс и пересборку DOM для максимальной стабильности.
+         */
         function spinReel(reelIndex, finalSymbol) {
             const inner = document.getElementById(`reel-inner-${reelIndex}`);
             const symbolHeight = getSymbolHeight();
             
-            // Сбрасываем переход, чтобы начать новое вращение без остаточных анимаций
-            inner.style.transition = 'none';
-            // Сбрасываем позицию для начала вращения
-            inner.style.transform = 'translateY(0)';
+            // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: МГНОВЕННЫЙ И ПОЛНЫЙ СБРОС СТИЛЕЙ И КОНТЕНТА ---
+            inner.style.transition = 'none'; 
+            inner.style.transform = 'translateY(0)'; 
             inner.classList.add('spinning');
-            
+            inner.innerHTML = ''; 
+            // ----------------------------------------------------------------------------------
+
             return new Promise(resolve => {
                 
-                // Пересобираем символы для спина
-                for(let i = 0; i < inner.children.length; i++) {
-                    const symbolDiv = inner.children[i];
-                    symbolDiv.innerHTML = '';
+                // Пересобираем символы для нового спина с нуля
+                for(let i = 0; i < totalSpinSymbols; i++) {
+                    const symbolDiv = document.createElement('div');
+                    symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
                     
-                    // ИСПРАВЛЕНИЕ 1: Снижена вероятность выбора из маленького набора (60% вместо 80%)
+                    // Шанс выпадения частого символа снижен до 60%
                     const symbolSet = Math.random() < 0.6 ? highFrequencySymbols : symbols;
-                    const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+                    let randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+                    
+                    // Устанавливаем финальный символ на последнее место
+                    if (i === totalSpinSymbols - 1) {
+                         randomSymbol = finalSymbol;
+                    }
                     
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
                     inner.appendChild(symbolDiv);
                 }
-                
-                // Устанавливаем финальный символ на последнее место
-                const finalSymbolDiv = inner.children[totalSpinSymbols - 1];
-                finalSymbolDiv.innerHTML = '';
-                finalSymbolDiv.style.height = `${symbolHeight}px`;
-                finalSymbolDiv.appendChild(createSymbolContent(finalSymbol));
-                
-                // Целевая позиция: предпоследний символ (totalSpinSymbols - 1) должен быть вверху (сдвиг вниз)
+
+                // Целевая позиция: предпоследний символ (totalSpinSymbols - 1) должен быть вверху
                 const targetPosition = - ((totalSpinSymbols - 1) * symbolHeight); 
 
                 setTimeout(() => {
@@ -500,7 +521,7 @@
                     inner.style.transform = `translateY(${targetPosition}px)`;
                     
                     setTimeout(() => {
-                        // ИСПРАВЛЕНИЕ: Убеждаемся, что переход (transition) полностью удален после окончания анимации.
+                        // Убеждаемся, что переход (transition) полностью удален после окончания анимации.
                         inner.style.transition = 'none';
                         resolve(finalSymbol);
                     }, animationTime); 
@@ -529,7 +550,7 @@
             let isBonusGame = (Math.random() * 100 < bonusChance);
             let finalSymbols = [];
 
-            // Стандартная логика:
+            // Стандартная логика выбора символов
             for (let i = 0; i < numReels; i++) {
                 if (Math.random() < 0.05) { 
                     finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
@@ -613,12 +634,12 @@
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
             
-            // ИСПРАВЛЕНИЕ 2: Снижение скорости роста бонусного шанса
+            // ИСПРАВЛЕНО: Снижение скорости роста бонусного шанса для балансировки
             if (playOverlay) {
                 if (isBonus) bonusChance = 1;
-                else bonusChance += 5; // Снижено с 7 до 5
+                else bonusChance += 5; 
             } else if (winAmount > 0) {
-                 bonusChance += 0.5; // Снижено с 1 до 0.5
+                 bonusChance += 0.5; 
             } else {
                 bonusChance = Math.max(1, bonusChance - 0.5);
             }
@@ -683,8 +704,9 @@
         function initializeGame() {
             loadGame();
             
+            // Используем rebuildReelsAndSetPosition для инициализации
             setTimeout(() => {
-                createReels();
+                rebuildReelsAndSetPosition();
             }, 50); 
             
             spinButton.addEventListener('click', () => spinSlots());
@@ -697,25 +719,14 @@
                 updateButtonsState(false); 
             });
             
+            // --- Наблюдатель за ресайзом для мобильной стабилизации ---
             const resizeObserver = new ResizeObserver(entries => {
                 for (let entry of entries) {
                     if (entry.target === reelContainer) {
-                        const symbolHeight = entry.contentRect.height;
-                         document.querySelectorAll('.reel-inner').forEach(inner => {
-                            inner.querySelectorAll('.symbol').forEach(symbol => {
-                                // 1. Пересчитываем высоту символов при ресайзе
-                                symbol.style.height = `${symbolHeight}px`;
-                            });
-
-                            // 2. ИСПРАВЛЕНИЕ 3: Корректируем позицию барабана после ресайза.
-                            // Мы знаем, что после спина выигрышный символ находится на позиции totalSpinSymbols - 1.
-                            const newTargetPosition = - ((totalSpinSymbols - 1) * symbolHeight);
-                            
-                            // Сбрасываем transition, чтобы избежать "скачка" при ресайзе
-                            inner.style.transition = 'none';
-                            // Применяем новую, скорректированную позицию
-                            inner.style.transform = `translateY(${newTargetPosition}px)`;
-                        });
+                        // Пересобираем барабаны только если не идет анимация
+                        if (!isSpinning) {
+                             rebuildReelsAndSetPosition();
+                        }
                     }
                 }
             });
