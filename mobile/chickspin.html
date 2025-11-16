@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Дает всегда! V26</title>
+    <title>ChickinSpin - Дает всегда! V27</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -333,6 +333,10 @@
             ANY_CHICK: 2        
         };
         
+        // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: ГЛОБАЛЬНАЯ ПЕРЕМЕННАЯ ДЛЯ ХРАНЕНИЯ ВЫИГРЫШНОЙ КОМБИНАЦИИ ---
+        // Инициализируем комбинацией, чтобы при первом запуске барабан не был пустым.
+        let lastFinalSymbols = [highFrequencySymbols[0], highFrequencySymbols[1], highFrequencySymbols[2]]; 
+        
         // --- Аудио Инициализация ---
         const spinSound = new Audio('audio/wheel.wav');
         spinSound.loop = true;
@@ -407,6 +411,7 @@
         function loadGame() {
             const savedBalance = localStorage.getItem('slotBalance');
             const savedBonus = localStorage.getItem('slotBonusChance');
+            const savedSymbols = localStorage.getItem('lastFinalSymbols');
             
             if (savedBalance) {
                 balance = parseInt(savedBalance);
@@ -414,6 +419,11 @@
             if (savedBonus) {
                 bonusChance = parseFloat(savedBonus);
             }
+            if (savedSymbols) {
+                 // Загружаем сохраненные символы, если они есть
+                 lastFinalSymbols = JSON.parse(savedSymbols);
+            }
+            
             balanceDisplay.textContent = balance;
             bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
             updateButtonsState(false);
@@ -422,6 +432,7 @@
         function saveGame() {
             localStorage.setItem('slotBalance', balance);
             localStorage.setItem('slotBonusChance', bonusChance);
+            localStorage.setItem('lastFinalSymbols', JSON.stringify(lastFinalSymbols));
         }
 
         /**
@@ -434,6 +445,7 @@
         /**
          * Пересобирает барабаны с новыми размерами и устанавливает их в финальную позицию.
          * Используется для инициализации и стабилизации после ресайза (мобильная клавиатура/поворот экрана).
+         * !!! Использует lastFinalSymbols для сохранения визуального результата !!!
          */
         function rebuildReelsAndSetPosition() {
             const symbolHeight = getSymbolHeight();
@@ -458,11 +470,17 @@
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
                     
-                    // Символ для нового барабана
-                    const symbolSet = Math.random() < 0.6 ? highFrequencySymbols : symbols;
-                    const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+                    let symbolToUse;
+                    if (j === totalSpinSymbols - 1) {
+                         // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем сохраненный символ! ---
+                         symbolToUse = lastFinalSymbols[i] || highFrequencySymbols[0];
+                    } else {
+                        // Остальные символы - случайные
+                        const symbolSet = Math.random() < 0.6 ? highFrequencySymbols : symbols;
+                        symbolToUse = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+                    }
 
-                    symbolDiv.appendChild(createSymbolContent(randomSymbol));
+                    symbolDiv.appendChild(createSymbolContent(symbolToUse));
                     innerDiv.appendChild(symbolDiv);
                 }
                 
@@ -483,12 +501,12 @@
             const inner = document.getElementById(`reel-inner-${reelIndex}`);
             const symbolHeight = getSymbolHeight();
             
-            // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: МГНОВЕННЫЙ И ПОЛНЫЙ СБРОС СТИЛЕЙ И КОНТЕНТА ---
+            // --- СБРОС СТИЛЕЙ И КОНТЕНТА ---
             inner.style.transition = 'none'; 
             inner.style.transform = 'translateY(0)'; 
             inner.classList.add('spinning');
-            inner.innerHTML = ''; 
-            // ----------------------------------------------------------------------------------
+            inner.innerHTML = ''; // Полное стирание старого DOM
+            // --------------------------------
 
             return new Promise(resolve => {
                 
@@ -498,7 +516,6 @@
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
                     
-                    // Шанс выпадения частого символа снижен до 60%
                     const symbolSet = Math.random() < 0.6 ? highFrequencySymbols : symbols;
                     let randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
                     
@@ -572,6 +589,9 @@
             const resolvedSymbols = await Promise.all(reelPromises);
             
             stopSpinSound();
+            
+            // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Сохраняем выигрышную комбинацию ---
+            lastFinalSymbols = resolvedSymbols;
 
             if (!checkWin(resolvedSymbols, isBonusGame, currentBet)) {
                 updateButtonsState(false);
@@ -634,7 +654,7 @@
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
             
-            // ИСПРАВЛЕНО: Снижение скорости роста бонусного шанса для балансировки
+            // Снижение скорости роста бонусного шанса для балансировки
             if (playOverlay) {
                 if (isBonus) bonusChance = 1;
                 else bonusChance += 5; 
