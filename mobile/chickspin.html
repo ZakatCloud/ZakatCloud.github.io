@@ -128,7 +128,7 @@
 <body>
 
     <div class="preloader" id="preloader">
-        <img src="Images/chick.png" alt="Loading ChickinSpin">
+        <img src="image/chick.png" alt="Loading ChickinSpin">
         <h1>CHICKINSPIN</h1>
         <p>ООО "Харинское казинООО"</p>
         <div class="loader-bar">
@@ -139,7 +139,7 @@
     <div class="slot-machine-wrapper" id="gameUI" style="opacity:0;">
         <div class="brand-header">
             <h1>
-                <img src="Images/chick.png" alt="ChickinSpin Logo" class="header-chick">
+                <img src="image/chick.png" alt="ChickinSpin Logo" class="header-chick">
                 CHICKINSPIN
             </h1>
         </div>
@@ -174,7 +174,7 @@
 
     <div id="winOverlay">
         <div class="jackpot-message">
-            <img src="Images/chick.png" alt="ChickinSpin Mascot">
+            <img src="image/chick.png" alt="ChickinSpin Mascot">
             <h3>ЧИКИН КОРМИТ!</h3>
         </div>
         <h2 id="winTitle"></h2>
@@ -234,11 +234,11 @@
         function createSymbolContent(symbolValue) {
             const img = document.createElement('img');
             if (symbolValue === SYMBOL_CHICK_PNG) {
-                img.src = 'Images/chick.png';
+                img.src = 'image/chick.png';
                 img.alt = 'Chick PNG';
                 return img;
             } else if (symbolValue === SYMBOL_CHICK_JPG) {
-                img.src = 'Images/chick.jpg';
+                img.src = 'image/chick.jpg';
                 img.alt = 'Clover JPG';
                 return img;
             } else {
