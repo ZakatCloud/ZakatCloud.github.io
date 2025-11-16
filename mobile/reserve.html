@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin V17</title>
+    <title>ChickinSpin - Идеальное Мобильное Центрирование V18</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -14,7 +14,7 @@
             --glass-bg: rgba(255, 255, 255, 0.05);
             --reel-bg: #000;
             --spin-shadow: #8B0000;
-            --content-padding: 10px; /* Отступ для внутренних элементов */
+            --content-padding: 10px; 
         }
 
         /* --- Общие Стили --- */
@@ -38,7 +38,6 @@
             position: relative;
         }
         
-        /* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Контейнер игры (Идеальное центрирование) */
         .slot-machine-wrapper {
             width: 100%;
             flex-grow: 1; 
@@ -46,7 +45,7 @@
             display: flex;
             flex-direction: column;
             padding: 0 0 15px 0; 
-            margin: 0 auto; /* Гарантирует центрирование */
+            margin: 0 auto; 
             box-sizing: border-box; 
         }
 
@@ -70,7 +69,6 @@
             -webkit-backdrop-filter: blur(8px); 
             border: 2px solid var(--primary-gold); 
         }
-        /* Внутренние отступы, чтобы контейнер оставался центрированным */
         .info-panel-wrapper { 
             margin-bottom: 15px; 
             padding: 15px var(--content-padding); 
@@ -130,6 +128,7 @@
 
         #spinButton:hover:not(:disabled) { background: linear-gradient(135deg, #FFC300, var(--primary-gold)); box-shadow: 0 4px 0 var(--spin-shadow); transform: translateY(4px); }
         #spinButton:disabled { background: #555; box-shadow: 0 4px #333; cursor: not-allowed; color: #bbb; transform: translateY(4px); border: 3px solid #333; }
+        
         .bet-control { 
             border: none; 
             padding: 0; 
@@ -143,8 +142,54 @@
         .bet-control label { font-size: 0.85em; color: var(--primary-gold); margin-bottom: 5px; font-weight: 700; }
         .bet-control input { width: 80px; padding: 8px; text-align: center; background-color: var(--reel-bg); border: 2px solid var(--primary-gold); border-radius: 8px; color: #4CAF50; font-size: 1.2em; font-weight: 700; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); -moz-appearance: textfield; }
         .bet-control input::-webkit-outer-spin-button, .bet-control input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* --- Новые кнопки --- */
+        .additional-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: auto;
+            gap: 10px;
+            padding: 0 0 15px 0;
+            margin: 0 var(--content-padding);
+        }
+        .full-bet-button {
+            flex-grow: 1;
+            padding: 10px 15px;
+            font-size: 1.1em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00BFFF 0%, #1E90FF 100%);
+            color: white;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0056b3;
+            transition: all 0.1s;
+        }
+        .share-button {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            font-size: 1.5em;
+            line-height: 50px;
+            text-align: center;
+            border: 2px solid #2e8b57;
+            box-shadow: 0 4px 0 #2e8b57;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+        }
+
+        .full-bet-button:hover, .share-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--spin-shadow);
+        }
         
-        /* --- Стили оверлея (ФИНАЛЬНЫЙ ФИКС ЦЕНТРИРОВАНИЯ ТЕКСТА) --- */
+        /* --- Стили оверлея --- */
         .win { color: #4CAF50 !important; font-weight: 700; } .jackpot { color: #FF00FF !important; text-shadow: 0 0 5px #FF00FF; font-weight: 900; } .lose { color: var(--secondary-red) !important; } .bonus { color: var(--primary-gold) !important; text-shadow: 0 0 5px var(--primary-gold); font-weight: 900; }
         
         #winOverlay { 
@@ -153,7 +198,7 @@
             justify-content: center; 
             align-items: center; 
             opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0s 0.5s; z-index: 1000; 
-            text-align: center; /* Ключ к центрированию текста */
+            text-align: center; 
         }
         
         #winOverlay.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease; }
@@ -165,7 +210,7 @@
             text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 5px #fff; 
             margin-bottom: 20px; 
             animation: pulse 1.5s infinite; 
-            text-align: center; /* Дополнительная гарантия центрирования */
+            text-align: center; 
             width: 100%;
             padding: 0 10px;
             box-sizing: border-box;
@@ -179,7 +224,7 @@
             line-height: 1; 
             display: block;
             width: 100%;
-            text-align: center; /* Дополнительная гарантия центрирования */
+            text-align: center; 
         }
         
         #winOverlay button { margin-top: 30px; padding: 15px 40px; background: linear-gradient(45deg, #4CAF50, #00FF00); color: black; font-size: 1.5em; font-weight: 700; border: 3px solid #000; border-radius: 10px; cursor: pointer; box-shadow: 0 5px #2e8b57; transition: all 0.1s; }
@@ -243,6 +288,13 @@
             </div>
             <button id="spinButton">SPIN</button>
         </div>
+
+        <div class="additional-controls">
+            <button id="spinAllButton" class="full-bet-button">ПОСТАВИТЬ ВСЁ</button>
+            <div id="shareButton" class="share-button">
+                &#9992;
+            </div>
+        </div>
     </div>
 
     <div id="winOverlay">
@@ -260,12 +312,16 @@
         const SYMBOL_CHICK_PNG = 'CHICK_PNG'; 
         const SYMBOL_CHICK_JPG = 'CHICK_JPG'; 
         const symbols = ['👑', '💎', '💰', '⭐', SYMBOL_CHICK_PNG, SYMBOL_CHICK_JPG, '🥚', '🍒'];
-        
+        // Символы с высокой частотой: 👑, 💎, 💰, ⭐
+        const highFrequencySymbols = symbols.slice(0, 4);
+
         const numReels = 3;
         const totalSpinSymbols = 30;
         
         const reelContainer = document.querySelector('.reels-container');
         const spinButton = document.getElementById('spinButton');
+        const spinAllButton = document.getElementById('spinAllButton'); // Новая кнопка
+        const shareButton = document.getElementById('shareButton');     // Новая кнопка
         const balanceDisplay = document.getElementById('balanceDisplay');
         const resultDisplay = document.getElementById('resultDisplay');
         const betInput = document.getElementById('betInput');
@@ -280,13 +336,16 @@
         let bet = 10;
         let isSpinning = false;
         let bonusChance = 1;
+        
+        // Минимальный баланс для защиты от "под ноль"
+        const MIN_BALANCE_LIMIT = 5; 
 
-        // --- МНОЖИТЕЛИ ВЫИГРЫША (RTP/Дисперсия) ---
+        // --- МНОЖИТЕЛИ ВЫИГРЫША (СКОРРЕКТИРОВАНЫ) ---
         const PAYOUTS = {
-            TRIPLE_MATCH: 100,  
+            TRIPLE_MATCH: 150,  // Увеличен с 100
             CHICK_BONUS: 30,    
-            DOUBLE_MATCH: 5,    
-            ANY_CHICK: 3        
+            DOUBLE_MATCH: 3,    // Уменьшен с 5
+            ANY_CHICK: 2        // Уменьшен с 3
         };
         
         // --- Аудио Инициализация ---
@@ -323,6 +382,7 @@
             winAmountDisplay.textContent = amount;
             winOverlay.classList.add('active');
             spinButton.disabled = true;
+            spinAllButton.disabled = true;
             betInput.disabled = true;
             winMusic.play().catch(e => console.log('Ошибка воспроизведения музыки: ', e));
         }
@@ -331,9 +391,30 @@
             winOverlay.classList.remove('active');
             winMusic.pause();
             winMusic.currentTime = 0;
-            spinButton.disabled = false;
-            betInput.disabled = false;
+            updateButtonsState(false);
         }
+
+        function updateButtonsState(spinning) {
+            isSpinning = spinning;
+            spinButton.disabled = spinning || balance < 1;
+            spinAllButton.disabled = spinning || balance < 1;
+            betInput.disabled = spinning || balance < 1;
+            if (balance <= MIN_BALANCE_LIMIT) {
+                 resultDisplay.textContent = 'БАЛАНС НА ИСХОДЕ!';
+                 resultDisplay.className = 'lose';
+                 betInput.max = balance;
+            } else {
+                 betInput.max = 100;
+            }
+            if (balance <= 0) {
+                spinButton.disabled = true;
+                spinAllButton.disabled = true;
+                betInput.disabled = true;
+                resultDisplay.textContent = 'ИГРА ОКОНЧЕНА! Обновите страницу.';
+                resultDisplay.className = 'lose';
+            }
+        }
+
 
         function loadGame() {
             const savedBalance = localStorage.getItem('slotBalance');
@@ -347,6 +428,7 @@
             }
             balanceDisplay.textContent = balance;
             bonusChanceDisplay.textContent = `${bonusChance.toFixed(1)}%`;
+            updateButtonsState(false);
         }
 
         function saveGame() {
@@ -372,7 +454,11 @@
                     const symbolDiv = document.createElement('div');
                     symbolDiv.className = 'symbol';
                     symbolDiv.style.height = `${symbolHeight}px`;
-                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    
+                    // Увеличиваем шанс выпадения highFrequencySymbols
+                    const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
+                    const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
                     innerDiv.appendChild(symbolDiv);
                 }
@@ -396,8 +482,12 @@
                     const symbolDiv = inner.children[i];
                     symbolDiv.innerHTML = '';
                     symbolDiv.style.height = `${symbolHeight}px`;
-                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    
+                    const symbolSet = Math.random() < 0.8 ? highFrequencySymbols : symbols;
+                    const randomSymbol = symbolSet[Math.floor(Math.random() * symbolSet.length)];
+                    
                     symbolDiv.appendChild(createSymbolContent(randomSymbol));
+                    inner.appendChild(symbolDiv);
                 }
                 
                 const finalSymbolDiv = inner.children[totalSpinSymbols - 1];
@@ -420,19 +510,27 @@
             });
         }
         
-        async function spinSlots() {
-            bet = parseInt(betInput.value); 
-            if (isNaN(bet) || bet <= 0 || balance < bet) {
-                resultDisplay.textContent = balance < bet ? 'НЕДОСТАТОЧНО СРЕДСТВ!' : 'Неверная ставка!';
+        async function spinSlots(customBet = null, forceAll = false) {
+            let currentBet = customBet !== null ? customBet : parseInt(betInput.value);
+
+            if (isNaN(currentBet) || currentBet <= 0 || balance < currentBet) {
+                resultDisplay.textContent = balance < currentBet ? 'НЕДОСТАТОЧНО СРЕДСТВ!' : 'Неверная ставка!';
                 resultDisplay.className = 'lose';
                 return;
             }
             
-            isSpinning = true;
-            spinButton.disabled = true;
-            betInput.disabled = true;
+            updateButtonsState(true);
             
-            balance -= bet;
+            // Если ставка "Поставить всё", защищаем MIN_BALANCE_LIMIT
+            if (forceAll) {
+                if (balance <= MIN_BALANCE_LIMIT) {
+                     currentBet = balance; // Ставим все, что есть
+                } else {
+                     currentBet = balance - MIN_BALANCE_LIMIT; // Ставим все, кроме MIN_BALANCE_LIMIT
+                }
+            }
+            
+            balance -= currentBet;
             balanceDisplay.textContent = balance;
             resultDisplay.textContent = 'ВРАЩЕНИЕ...';
             resultDisplay.className = '';
@@ -440,18 +538,31 @@
             spinSound.play().catch(e => console.log('Ошибка воспроизведения звука: ', e));
 
             let isBonusGame = (Math.random() * 100 < bonusChance);
+            let finalSymbols = [];
 
-            const finalSymbols = [];
-            for (let i = 0; i < numReels; i++) {
-                if (Math.random() < 0.25) { 
-                    finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
+            if (forceAll) {
+                // Логика "Поставить всё": 70% проигрыш, 30% крупный выигрыш
+                if (Math.random() < 0.70) { 
+                    // 70% проигрыш (разные символы с низкой стоимостью)
+                    finalSymbols = [highFrequencySymbols[0], highFrequencySymbols[1], highFrequencySymbols[2]];
                 } else {
-                    finalSymbols.push(symbols[Math.floor(Math.random() * 4)]); 
+                    // 30% крупный выигрыш (Джекпот или почти Джекпот)
+                    finalSymbols = [symbols[0], symbols[0], symbols[0]]; // Три короны - Джекпот
                 }
-            }
+            } else {
+                // Стандартная логика:
+                for (let i = 0; i < numReels; i++) {
+                    if (Math.random() < 0.05) { // Шанс выпадения курицы (редкий, 5%)
+                        finalSymbols.push(symbols[4 + Math.floor(Math.random() * 2)]);
+                    } else {
+                        // Высокий шанс выпадения символов с низкой стоимостью
+                        finalSymbols.push(highFrequencySymbols[Math.floor(Math.random() * highFrequencySymbols.length)]); 
+                    }
+                }
             
-            if (isBonusGame) {
-                 finalSymbols[2] = SYMBOL_CHICK_PNG;
+                if (isBonusGame) {
+                     finalSymbols[2] = SYMBOL_CHICK_PNG;
+                }
             }
 
 
@@ -464,17 +575,14 @@
             
             stopSpinSound();
 
-            isSpinning = false;
-            
-            if (!checkWin(resolvedSymbols, isBonusGame)) {
-                spinButton.disabled = false;
-                betInput.disabled = false;
+            if (!checkWin(resolvedSymbols, isBonusGame, currentBet)) {
+                updateButtonsState(false);
             }
             
             saveGame();
         }
 
-        function checkWin(symbolsArr, isBonus) {
+        function checkWin(symbolsArr, isBonus, playedBet) {
             const [s1, s2, s3] = symbolsArr;
             let winAmount = 0;
             let message = 'НЕ ПОВЕЗЛО... 😞';
@@ -484,21 +592,21 @@
             const isChick = (s) => s === SYMBOL_CHICK_PNG || s === SYMBOL_CHICK_JPG;
 
             if (isBonus) {
-                winAmount = bet * PAYOUTS.CHICK_BONUS;
+                winAmount = playedBet * PAYOUTS.CHICK_BONUS;
                 message = `🎁 БОНУС! Куриное Золото: ${winAmount}!`;
                 resultClass = 'bonus';
                 playOverlay = true;
             } else if (s1 === s2 && s2 === s3) {
-                winAmount = bet * PAYOUTS.TRIPLE_MATCH; 
+                winAmount = playedBet * PAYOUTS.TRIPLE_MATCH; 
                 message = `👑 ДЖЕКПОТ! Выигрыш: ${winAmount}!`;
                 resultClass = 'jackpot';
                 playOverlay = true;
             } else if (isChick(s1) && isChick(s2) && isChick(s3)) {
-                winAmount = bet * PAYOUTS.ANY_CHICK; 
+                winAmount = playedBet * PAYOUTS.ANY_CHICK; 
                 message = `🐔 3 Курицы! Выигрыш: +${winAmount}!`;
                 resultClass = 'win';
             } else if ((s1 === s2) || (s2 === s3) || (s1 === s3)) {
-                winAmount = bet * PAYOUTS.DOUBLE_MATCH; 
+                winAmount = playedBet * PAYOUTS.DOUBLE_MATCH; 
                 message = `💰 Выигрыш! +${winAmount}!`;
                 resultClass = 'win';
             }
@@ -508,6 +616,7 @@
             resultDisplay.textContent = message;
             resultDisplay.className = resultClass;
             
+            // Логика шанса бонуса
             if (playOverlay) {
                 if (isBonus) bonusChance = 1;
                 else bonusChance += 7;
@@ -524,15 +633,45 @@
                 showWinOverlay(isBonus ? "БОНУСНЫЙ ВЫИГРЫШ" : "СУПЕР ДЖЕКПОТ", winAmount);
                 return true; 
             }
-
-            if (balance <= 0) {
-                spinButton.disabled = true;
-                betInput.disabled = true;
-                resultDisplay.textContent = 'ИГРА ОКОНЧЕНА! Обновите страницу.';
-                resultDisplay.className = 'lose';
-            }
             return false;
         }
+
+        function spinAll() {
+            if (balance <= MIN_BALANCE_LIMIT) {
+                resultDisplay.textContent = 'БАЛАНС НА ИСХОДЕ! Сделайте минимальную ставку.';
+                resultDisplay.className = 'lose';
+                return;
+            }
+            spinSlots(null, true);
+        }
+
+        function shareStats() {
+            const message = `Я только что выиграл в ChickinSpin! Мой текущий баланс: ${balance} 💰. Хочешь поиграть тоже? @CHICKINSPIN`;
+            const url = window.location.href; 
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ChickinSpin: Мой выигрыш!',
+                    text: message,
+                    url: url,
+                })
+                .catch(error => console.log('Ошибка поделиться', error));
+            } else {
+                // Fallback для устройств без Web Share API
+                const fallbackMessage = message + `\n${url}`;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(fallbackMessage).then(() => {
+                        alert('Статистика скопирована в буфер обмена! Вы можете отправить ее в любой мессенджер.');
+                    }).catch(err => {
+                        console.error('Не удалось скопировать:', err);
+                        alert(`Не удалось скопировать. Скопируйте вручную:\n\n${fallbackMessage}`);
+                    });
+                } else {
+                    alert(`Скопируйте вручную:\n\n${fallbackMessage}`);
+                }
+            }
+        }
+
 
         // --- Управление Preloader ---
         function startLoading() {
@@ -561,11 +700,16 @@
                 createReels();
             }, 50); 
             
-            spinButton.addEventListener('click', spinSlots);
+            // Подключение новых функций
+            spinButton.addEventListener('click', () => spinSlots());
+            spinAllButton.addEventListener('click', spinAll);
+            shareButton.addEventListener('click', shareStats);
+
             betInput.addEventListener('change', () => {
                 const val = parseInt(betInput.value);
                 if (val > balance) betInput.value = balance; 
                 if (val < 1 || isNaN(val)) betInput.value = 1;
+                updateButtonsState(false); // Обновляем состояние, чтобы учесть новый max
             });
             
             const resizeObserver = new ResizeObserver(entries => {
