@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChickinSpin - Казино Симулятор v13 (Финальная версия)</title>
+    <title>ChickinSpin - Идеальное Мобильное Центрирование</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS Стили --- */
@@ -21,14 +21,16 @@
         /* --- Общие Стили --- */
         html, body { 
             height: 100%; 
+            /* ГАРАНТИЯ: Занимает всю высоту экрана */
+            min-height: 100vh;
             touch-action: manipulation;
         }
         
-        /* ИСПРАВЛЕНИЕ: Центрирование body */
+        /* ИСПРАВЛЕНИЕ: body - Основной контейнер для центрирования */
         body {
             display: flex;
             flex-direction: column;
-            /* Важно: Центрирует по горизонтали */
+            /* Центрирует .slot-machine-wrapper по горизонтали */
             align-items: center; 
             margin: 0;
             background: radial-gradient(circle at center, #361717 0%, var(--dark-bg) 100%);
@@ -40,21 +42,22 @@
             position: relative;
         }
         
-        /* ИСПРАВЛЕНИЕ: Контейнер слота всегда центрирован и ограничен */
+        /* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: .slot-machine-wrapper */
         .slot-machine-wrapper {
             width: 100%;
             flex-grow: 1; 
+            /* Ограничение ширины для мобильного дизайна */
             max-width: 500px; 
             display: flex;
             flex-direction: column;
-            /* Уменьшаем горизонтальный padding, чтобы не вызывать сдвиг */
-            padding: 0 10px 15px 10px; 
+            /* Убраны горизонтальные padding, чтобы избежать сдвигов */
+            padding: 0 0 15px 0; 
             box-sizing: border-box; 
-            /* Центрирование самого контейнера */
+            /* ГАРАНТИЯ: Центрирует контейнер относительно body */
             margin: 0 auto;
         }
-
-        /* --- Header и Preloader (Стили без изменений, но пути в HTML исправлены) --- */
+        
+        /* --- Preloader и Header --- */
         .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #421D1D 0%, #100000 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 1s ease; }
         .preloader h1 { font-family: 'Playfair Display', serif; font-size: 3.5em; color: var(--primary-gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.7); margin: 10px 0 0 0; font-weight: 900; }
         .preloader img { width: 100px; height: 100px; filter: drop-shadow(0 0 15px var(--primary-gold)); }
@@ -64,28 +67,46 @@
         .brand-header { width: 100%; background: var(--dark-bg); padding: 15px 0; margin-bottom: 5px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7); border-bottom: 4px solid var(--secondary-red); }
         .brand-header h1 { font-family: 'Playfair Display', serif; font-size: 2.5em; color: var(--primary-gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.5), 0 0 5px var(--secondary-red); margin: 0; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 15px; }
         .header-chick { width: 45px; height: 45px; object-fit: contain; border-radius: 5px; filter: drop-shadow(0 0 8px var(--primary-gold)); }
+        
+        /* --- Инфо-панели --- */
         .glass-panel { background: var(--glass-bg); border-radius: 20px; box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 2px solid var(--primary-gold); }
-        .info-panel-wrapper { margin-bottom: 15px; padding: 15px; }
+        /* padding для info-panel-wrapper теперь управляет отступами от краёв */
+        .info-panel-wrapper { margin-bottom: 15px; padding: 15px 10px; margin: 0 10px 15px 10px;}
         .info-panel { display: flex; justify-content: space-between; width: 100%; gap: 8px; padding: 0; }
         .display-box { flex-grow: 1; min-width: 0; background-color: var(--reel-bg); border-radius: 8px; padding: 8px 5px; font-size: 0.85em; text-align: center; box-shadow: inset 0 0 5px rgba(255, 215, 0, 0.3); border: 1px solid var(--primary-gold); }
         .display-box span { font-size: 1.1em; }
         
         /* --- Барабаны --- */
-        .reels-container { display: flex; justify-content: space-around; flex-grow: 1; align-items: center; margin-bottom: 20px; background: var(--reel-bg); border-radius: 12px; padding: 10px; border: 3px solid var(--secondary-red); box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); width: 100%; min-height: 200px; max-height: 50vh; }
+        .reels-container { 
+            display: flex; 
+            justify-content: space-around; 
+            flex-grow: 1; 
+            align-items: center; 
+            margin: 0 10px 20px 10px; /* Отступы от краев экрана */
+            background: var(--reel-bg); 
+            border-radius: 12px; 
+            padding: 10px; 
+            border: 3px solid var(--secondary-red); 
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); 
+            width: auto; /* Позволяет margin управлять шириной */
+            min-height: 200px; 
+            max-height: 50vh; 
+        }
         .reel { width: 30%; height: 100%; border-radius: 5px; overflow: hidden; background-color: #000; position: relative; }
         .reel-inner { position: absolute; width: 100%; will-change: transform; }
         .symbol { height: auto; display: flex; justify-content: center; align-items: center; font-size: 4em; font-weight: bold; color: var(--primary-gold); text-shadow: 0 0 8px #fff; background: linear-gradient(135deg, #222 0%, #000 100%); }
         .symbol img { max-width: 90%; max-height: 90%; object-fit: contain; filter: drop-shadow(0 0 5px #ffd700); }
         .spinning { animation: none; }
         
-        /* --- Элементы управления (исправлено центрирование) --- */
+        /* КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Элементы управления */
         .controls { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            width: 100%; 
+            width: auto; /* Позволяет margin управлять шириной */
             gap: 15px; 
             padding: 15px;
+            margin: 0 10px; /* Отступы от краев экрана */
         }
 
         #spinButton { 
@@ -119,7 +140,7 @@
         .bet-control input { width: 80px; padding: 8px; text-align: center; background-color: var(--reel-bg); border: 2px solid var(--primary-gold); border-radius: 8px; color: #4CAF50; font-size: 1.2em; font-weight: 700; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); -moz-appearance: textfield; }
         .bet-control input::-webkit-outer-spin-button, .bet-control input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* --- Стили оверлея (без изменений) --- */
+        /* --- Стили оверлея --- */
         .win { color: #4CAF50 !important; font-weight: 700; } .jackpot { color: #FF00FF !important; text-shadow: 0 0 5px #FF00FF; font-weight: 900; } .lose { color: var(--secondary-red) !important; } .bonus { color: var(--primary-gold) !important; text-shadow: 0 0 5px var(--primary-gold); font-weight: 900; }
         #winOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0s 0.5s; z-index: 1000; }
         #winOverlay.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease; }
@@ -129,7 +150,8 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         .jackpot-message { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
         .jackpot-message h3 { font-family: 'Playfair Display', serif; font-size: 1.8em; color: #fff; text-shadow: 0 0 10px var(--secondary-red); margin: 10px 0; font-weight: 700; }
-        .jackpot-message img { width: 80px; height: 80px; border-radius: 50%; border: 5px solid var(--primary-gold); object-fit: cover; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        /* Удалено ограничение border-radius: 50% на изображении в оверлее */
+        .jackpot-message img { width: 80px; height: 80px; border: 5px solid var(--primary-gold); object-fit: cover; box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
 
     </style>
 </head>
@@ -224,7 +246,7 @@
             ANY_CHICK: 3        
         };
         
-        // --- Аудио Инициализация ---
+        // --- Аудио Инициализация (Пути исправлены) ---
         const spinSound = new Audio('audio/wheel.wav');
         spinSound.loop = true;
         spinSound.volume = 0.8; 
@@ -238,7 +260,7 @@
             spinSound.currentTime = 0;
         }
 
-        // --- ИСПРАВЛЕНО: Пути в JS для символов ---
+        // --- JS: Пути к символам исправлены ---
         function createSymbolContent(symbolValue) {
             const img = document.createElement('img');
             if (symbolValue === SYMBOL_CHICK_PNG) {
