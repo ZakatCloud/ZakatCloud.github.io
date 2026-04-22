@@ -1,68 +1,230 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Zakat Cloud</title>
-  <link rel="stylesheet" href="style.css" />
-  <script>
-    const isMobile = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-    const currentPath = window.location.pathname;
-    if (isMobile && !currentPath.includes("/mobile")) {
-      window.location.href = "/mobile/index.html";
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Андрей Силентов | Разработчик</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="script.js"></script>
+    <script>
+        if (window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|webOS|BlackBerry/i.test(navigator.userAgent)) {
+            window.location.replace('mobile.html');
+        }
+    </script>
 </head>
 <body>
-  <div class="animated-bg"></div>
-  
-  <div class="app">
-    <aside class="sidebar glass">
-      <div class="logo">
-        <div class="logo-icon">Z</div>
-        <div class="logo-text">ZakatCloud</div>
-      </div>
-
-      <nav class="nav">
-        <a class="nav-item active" href="index.html">Главная</a>
-        <a class="nav-item" href="posts.html">Посты</a>
-        <a class="nav-item" href="articles.html">Софт и статьи</a>
-        <a class="nav-item" href="gallery.html">Галерея</a>
-        <a class="nav-item" href="contacts.html">Контакты</a>
-        <a class="nav-item" href="people.html">Люди</a>
-        <a class="nav-item" href="zakatfinance.html">СтиралкаMoney</a>
-      </nav>
-    </aside>
-
-    <main class="main glass">
-      <header class="main-header">
-        <h1>Привет, это мое личное общественное облако</h1>
-        <p class="subtitle">Здесь собраны мои посты, статьи, софт, галерея и многое другое.</p>
-      </header>
-
-      <section class="content">
-        <div class="big-card">
-          <h2>Навигация</h2>
-          <p>Выбери интересующий раздел, чтобы узнать больше.</p>
-          <div class="link-grid">
-            <a href="posts.html" class="link-pill">📝 Посты</a>
-            <a href="articles.html" class="link-pill">👥 Статьи и софт</a>
-            <a href="gallery.html" class="link-pill">🖼 Галерея</a>
-            <a href="contacts.html" class="link-pill">📞 Контакты</a>
-            <a href="people.html" class="link-pill">Люди</a> 
-            <a href="zakatfinance.html" class="link-pill">СтиралкаMoney</a>
-          </div>
+    <div class="scanline"></div>
+    <canvas id="matrix"></canvas>
+    
+    <div class="terminal-bar">
+        <div class="terminal-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
         </div>
-      </section>
+        <div class="terminal-title">andrei@silent-dev:~$</div>
+    </div>
 
-      <footer class="footer">
-        <div>© <span id="year"></span> ZakatCloud</div>
-      </footer>
-    </main>
-  </div>
+    <div class="main-content">
+        <div class="card-column">
+            <div class="card-3d-container">
+                <div class="card-3d">
+                    <div class="card-face card-front">
+                        <div class="avatar-container">
+                            <div class="avatar-ring"></div>
+                            <div class="avatar">
+                                <img src="https://i.pinimg.com/736x/34/49/fa/3449fa891811b491cf0493a67185152c.jpg" alt="Аватар" class="avatar-img">
+                            </div>
+                            <div class="avatar-glow"></div>
+                        </div>
+                        <div class="card-info">
+                            <h2>Андрей Силентов</h2>
+                            <p class="role">[ РАЗРАБОТЧИК ]</p>
+                            <div class="status-line">
+                                <span class="status-dot"></span>
+                                <span>Доступен для проектов</span>
+                            </div>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://t.me/youngequinox" target="_blank" class="social-btn telegram" data-tooltip="Telegram">
+                                <i class="fab fa-telegram-plane"></i>
+                            </a>
+                            <a href="https://soundcloud.com/silentovandrey" target="_blank" class="social-btn soundcloud" data-tooltip="SoundCloud">
+                                <i class="fab fa-soundcloud"></i>
+                            </a>
+                            <a href="https://github.com/ZakatCloud" target="_blank" class="social-btn github" data-tooltip="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://vk.com/silentoffandrey" target="_blank" class="social-btn vk" data-tooltip="VK">
+                                <i class="fab fa-vk"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="skills-grid">
+                            <h3>МАТРИЦА НАВЫКОВ</h3>
+                            <div class="skill-item">
+                                <span class="skill-name">Node.JS</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="85"></div></div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">HTML</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="90"></div></div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">CSS</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="88"></div></div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Python</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="65"></div></div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Go</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="55"></div></div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Rust</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="20"></div></div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">C++</span>
+                                <div class="skill-bar"><div class="skill-fill" data-level="15"></div></div>
+                            </div>
+                        </div>
+                        <div class="interests-section">
+                            <h3>ИНТЕРЕСЫ</h3>
+                            <div class="tag-cloud">
+                                <span class="tag">Кибербезопасность</span>
+                                <span class="tag">ИИ/ML</span>
+                                <span class="tag">Музыка</span>
+<span class="tag">CTF</span>
+                                <span class="tag">Open Source</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="flip-btn" onclick="this.parentElement.querySelector('.card-3d').classList.toggle('flipped')">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+        <div class="about-column">
+            <div class="terminal-window">
+                <div class="window-header">
+                    <i class="fas fa-terminal"></i>
+                    <span>info.js</span>
+                </div>
+                <div class="window-content">
+                    <div class="info-block">
+                        <div class="info-line"><span class="info-key">Name:</span> <span class="info-value">Андрей Силентов</span></div>
+                        <div class="info-line"><span class="info-key">Age:</span> <span class="info-value">17</span></div>
+                        <div class="info-line"><span class="info-key">City:</span> <span class="info-value">Омск, Россия</span></div>
+                        <div class="info-line"><span class="info-key">Main:</span> <span class="info-value highlight">Node.JS</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="projects-section" id="projects">
+        <div class="section-header">
+            <span class="line-num">02</span>
+            <h2>// ПРОЕКТЫ</h2>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Equidex VPN</h3>
+                <p>VPN-сервис с интеграцией Telegram бота</p>
+                <div class="project-tags">
+                    <a href="https://t.me/EquiDexBot" target="_blank" class="project-link">
+                        <i class="fab fa-telegram"></i>
+                        T.ME/EquiDexBot
+                    </a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-water"></i>
+                </div>
+                <h3>HydroWeb</h3>
+                <p>HydroWeb - это высокопроизводительный, оптимизированный фреймворк для аудита безопасности веб-ресурсов, созданный для максимального воздействия на цель при минимальной нагрузке на вашу систему.</p>
+                <div class="project-tags">
+                    <a href="https://github.com/ZakatCloud/HydroWeb" target="_blank" class="project-link">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <div class="section-header">
+            <span class="line-num">03</span>
+            <h2>// КОНТАКТЫ</h2>
+        </div>
+        <div class="contact-container">
+            <div class="contact-terminal">
+                <div class="window-header">
+                    <i class="fas fa-envelope"></i>
+                    <span>init_contact.sh</span>
+                </div>
+                <div class="window-content">
+                    <div class="contact-options">
+                        <a href="https://t.me/youngequinox" target="_blank" class="contact-btn">
+                            <i class="fab fa-telegram-plane"></i>
+                            <span>Telegram</span>
+                        </a>
+                        <a href="https://soundcloud.com/silentovandrey" target="_blank" class="contact-btn">
+                            <i class="fab fa-soundcloud"></i>
+                            <span>SoundCloud</span>
+                        </a>
+                        <a href="https://vk.com/silentoffandrey" target="_blank" class="contact-btn">
+                            <i class="fab fa-vk"></i>
+                            <span>ВКонтакте</span>
+                        </a>
+                        <a href="https://github.com/ZakatCloud" target="_blank" class="contact-btn">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="ascii-art">
+<pre>
+ ╔═══════════════════════════════════════╗
+ ║  ██████╗ ██████╗ ██╗███████╗██████╗ ║
+ ║  ██╔══██╗██╔══██╗██║██╔════╝██╔══██╗║
+ ║  ██████╔╝██████╔╝██║█████╗  ██████╔╝║
+ ║  ██╔══██╗██╔══██╗██║██╔══╝  ██╔══██╗║
+ ║  ██████╔╝██║  ██║██║███████╗██║  ██║║
+ ║  ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝  ╚═╝║
+ ╚═══════════════════════════════════════╝
+</pre>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/ZakatCloud" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://t.me/youngequinox" target="_blank"><i class="fab fa-telegram-plane"></i></a>
+                <a href="https://soundcloud.com/silentovandrey" target="_blank"><i class="fab fa-soundcloud"></i></a>
+                <a href="https://vk.com/silentoffandrey" target="_blank"><i class="fab fa-vk"></i></a>
+            </div>
+            <p class="copyright">&lt;/&gt; with <span class="heart">&lt;3</span> by Андрей Силентов &copy; 2026</p>
+            <p class="version">v1.0.0 | Build: 20260422</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
